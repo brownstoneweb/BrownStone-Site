@@ -6,6 +6,23 @@ import { getTemplates } from "@/lib/crm/templates";
 import { getContacts } from "@/lib/crm/contacts";
 import { CampaignForm } from "./CampaignForm";
 
+async function getSegments(supabase: Awaited<ReturnType<typeof createClient>>) {
+  const { data, error } = await supabase
+    .from("contact_segments")
+    .select("*")
+    .order("name", { ascending: true });
+  if (error) throw error;
+  const { data: counts } = await supabase.from("contact_segment_members").select("segment_id");
+  const countMap: Record<string, number> = {};
+  (counts ?? []).forEach((r: { segment_id: string }) => {
+    countMap[r.segment_id] = (countMap[r.segment_id] ?? 0) + 1;
+  });
+  return (data ?? []).map((s: { id: string; name: string; color: string }) => ({
+    ...s,
+    contact_count: countMap[s.id] ?? 0,
+  }));
+}
+
 export default async function AdminCrmCampaignsNewPage() {
   const supabase = await createClient();
   const {
@@ -18,9 +35,10 @@ export default async function AdminCrmCampaignsNewPage() {
     redirect("/admin/dashboard");
   }
 
-  const [templates, contacts] = await Promise.all([
+  const [templates, contacts, segments] = await Promise.all([
     getTemplates(supabase),
     getContacts(supabase, {}, 500),
+    getSegments(supabase),
   ]);
 
   return (
@@ -38,7 +56,7 @@ export default async function AdminCrmCampaignsNewPage() {
       <p className="text-slate-500 mt-1 mb-8">
         Create a campaign, add contacts, and send personalized emails.
       </p>
-      <CampaignForm templates={templates} contacts={contacts} />
+      <CampaignForm templates={templates} contacts={contacts} segments={segments} />
     </div>
   );
 }

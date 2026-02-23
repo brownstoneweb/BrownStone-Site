@@ -1,8 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { DeleteCampaignButton } from "../DeleteCampaignButton";
+
+function formatTimeRemaining(seconds: number): string {
+  if (seconds <= 0) return "";
+  const mins = Math.ceil(seconds / 60);
+  if (mins < 60) return `${mins} min`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
 
 type Campaign = {
   id: string;
@@ -45,9 +54,36 @@ export function CampaignDetailClient({
   const [sendResult, setSendResult] = useState<{
     sent: number;
     errors?: string[];
+    retryAfterSeconds?: number;
   } | null>(null);
   const [addContactIds, setAddContactIds] = useState<Set<string>>(new Set());
   const [addingContacts, setAddingContacts] = useState(false);
+  const [sendLimit, setSendLimit] = useState<{
+    canSend: boolean;
+    sentThisHour: number;
+    sentToday: number;
+    maxPerHour: number;
+    maxPerDay: number;
+    retryAfterSeconds?: number;
+  } | null>(null);
+  const [countdown, setCountdown] = useState<number | null>(null);
+
+  const fetchSendStatus = useCallback(async () => {
+    try {
+      const res = await fetch("/api/crm/campaigns/send-status");
+      if (res.ok) {
+        const data = await res.json();
+        setSendLimit(data);
+        if (data.retryAfterSeconds != null && data.retryAfterSeconds > 0) {
+          setCountdown(data.retryAfterSeconds);
+        } else {
+          setCountdown(null);
+        }
+      }
+    } catch {
+      setSendLimit(null);
+    }
+  }, []);
 
   const existingSet = new Set(existingContactIds);
   const addableContacts = allContacts.filter(
@@ -89,6 +125,26 @@ export function CampaignDetailClient({
   const pending = campaignEmails.filter((ce) => ce.status === "pending").length;
   const sent = campaignEmails.filter((ce) => ce.status === "sent").length;
 
+  useEffect(() => {
+    if (pending > 0 && campaign.template_id) {
+      fetchSendStatus();
+    }
+  }, [pending, campaign.template_id, fetchSendStatus]);
+
+  useEffect(() => {
+    if (countdown == null || countdown <= 0) return;
+    const t = setInterval(() => {
+      setCountdown((c) => {
+        if (c == null || c <= 1) {
+          setTimeout(() => fetchSendStatus(), 100);
+          return null;
+        }
+        return c - 1;
+      });
+    }, 1000);
+    return () => clearInterval(t);
+  }, [countdown, fetchSendStatus]);
+
   async function handleSend() {
     setSending(true);
     setSendResult(null);
@@ -97,7 +153,20 @@ export function CampaignDetailClient({
         method: "POST",
       });
       const data = await res.json();
-      setSendResult({ sent: data.sent ?? 0, errors: data.errors });
+      if (res.status === 429) {
+        setSendResult({
+          sent: 0,
+          errors: [data.error ?? "Sending limit reached"],
+          retryAfterSeconds: data.retry_after_seconds,
+        });
+        if (data.retry_after_seconds) {
+          setCountdown(data.retry_after_seconds);
+        }
+        fetchSendStatus();
+      } else {
+        setSendResult({ sent: data.sent ?? 0, errors: data.errors });
+        fetchSendStatus();
+      }
       router.refresh();
     } catch {
       setSendResult({ sent: 0, errors: ["Request failed"] });
@@ -128,14 +197,24 @@ export function CampaignDetailClient({
 
       {pending > 0 && campaign.template_id && (
         <div>
+          {sendLimit && (
+            <p className="text-xs text-slate-500 mb-2">
+              {sendLimit.sentThisHour}/{sendLimit.maxPerHour} sent this hour · {sendLimit.sentToday}/{sendLimit.maxPerDay} sent today
+            </p>
+          )}
           <button
             type="button"
             onClick={handleSend}
-            disabled={sending}
-            className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-semibold text-sm disabled:opacity-70"
+            disabled={sending || (sendLimit && !sendLimit.canSend)}
+            className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-semibold text-sm disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {sending ? "Sending..." : `Send batch (up to 10)`}
           </button>
+          {sendLimit && !sendLimit.canSend && (
+            <p className="text-sm text-amber-600 mt-2 font-medium">
+              Limit reached. You can send again in {countdown != null && countdown > 0 ? formatTimeRemaining(countdown) : "—"}.
+            </p>
+          )}
           <p className="text-xs text-slate-500 mt-2">
             Sends up to 10 emails per click. Respects daily/hourly limits.
           </p>
@@ -148,10 +227,16 @@ export function CampaignDetailClient({
             sendResult.errors?.length ? "bg-amber-50 text-amber-800" : "bg-green-50 text-green-800"
           }`}
         >
-          <p className="font-medium">
-            Sent {sendResult.sent} email{sendResult.sent !== 1 ? "s" : ""}.
-          </p>
-          {sendResult.errors?.length ? (
+          {sendResult.sent > 0 ? (
+            <p className="font-medium">
+              Sent {sendResult.sent} email{sendResult.sent !== 1 ? "s" : ""}.
+            </p>
+          ) : sendResult.retryAfterSeconds != null ? (
+            <p className="font-medium">
+              {sendResult.errors?.[0] ?? "Limit reached"}. You can send again in {countdown != null && countdown > 0 ? formatTimeRemaining(countdown) : formatTimeRemaining(sendResult.retryAfterSeconds)}.
+            </p>
+          ) : null}
+          {sendResult.errors?.length && !sendResult.retryAfterSeconds ? (
             <ul className="mt-2 text-sm list-disc list-inside">
               {sendResult.errors.map((e, i) => (
                 <li key={i}>{e}</li>

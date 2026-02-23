@@ -6,7 +6,7 @@ import { getUserRoles } from "@/lib/supabase/auth";
 import {
   getCampaignById,
   getCampaignEmailsForSending,
-  canSendMoreEmails,
+  getSendLimitStatus,
   buildContactVars,
 } from "@/lib/crm/campaigns";
 import { getTemplateById, interpolateTemplate } from "@/lib/crm/templates";
@@ -56,10 +56,14 @@ export async function POST(
     return NextResponse.json({ error: "Template not found" }, { status: 404 });
   }
 
-  const { ok, limit, sentThisHour = 0, sentToday = 0 } = await canSendMoreEmails(supabase);
-  if (!ok) {
+  const limitStatus = await getSendLimitStatus(supabase);
+  const { canSend, limit, sentThisHour = 0, sentToday = 0, retryAfterSeconds } = limitStatus;
+  if (!canSend) {
     return NextResponse.json(
-      { error: `Sending limit reached: ${limit}` },
+      {
+        error: `Sending limit reached: ${limit}`,
+        retry_after_seconds: retryAfterSeconds,
+      },
       { status: 429 }
     );
   }

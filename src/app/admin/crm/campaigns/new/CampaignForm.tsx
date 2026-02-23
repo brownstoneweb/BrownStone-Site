@@ -12,23 +12,27 @@ type Contact = {
   do_not_contact?: boolean;
   unsubscribed?: boolean;
 };
+type Segment = { id: string; name: string; color: string; contact_count: number };
 
 export function CampaignForm({
   templates,
   contacts,
+  segments = [],
 }: {
   templates: Template[];
   contacts: Contact[];
+  segments?: Segment[];
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [templateId, setTemplateId] = useState("");
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedContactIds, setSelectedContactIds] = useState<Set<string>>(new Set());
+  const [selectedSegmentIds, setSelectedSegmentIds] = useState<Set<string>>(new Set());
 
   function toggleContact(id: string) {
-    setSelectedIds((prev) => {
+    setSelectedContactIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
@@ -36,17 +40,30 @@ export function CampaignForm({
     });
   }
 
-  function toggleAll() {
-    if (selectedIds.size === contacts.length) {
-      setSelectedIds(new Set());
+  function toggleAllContacts() {
+    if (selectedContactIds.size === eligibleContacts.length) {
+      setSelectedContactIds(new Set());
     } else {
-      setSelectedIds(new Set(contacts.map((c) => c.id)));
+      setSelectedContactIds(new Set(eligibleContacts.map((c) => c.id)));
     }
+  }
+
+  function toggleSegment(id: string) {
+    setSelectedSegmentIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (!hasRecipients) {
+      setError("Select at least one segment or individual contact.");
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/crm/campaigns", {
@@ -56,7 +73,8 @@ export function CampaignForm({
           name: name.trim(),
           type: "cold",
           template_id: templateId || null,
-          contact_ids: Array.from(selectedIds),
+          contact_ids: selectedContactIds.size > 0 ? Array.from(selectedContactIds) : undefined,
+          segment_ids: selectedSegmentIds.size > 0 ? Array.from(selectedSegmentIds) : undefined,
         }),
       });
       const data = await res.json();
@@ -76,6 +94,8 @@ export function CampaignForm({
   const eligibleContacts = contacts.filter(
     (c) => !c.do_not_contact && !c.unsubscribed
   );
+
+  const hasRecipients = selectedSegmentIds.size > 0 || selectedContactIds.size > 0;
 
   return (
     <form
@@ -126,15 +146,47 @@ export function CampaignForm({
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
-            Contacts ({selectedIds.size} selected)
+            Recipients
           </label>
-          <div className="border border-slate-200 rounded-lg max-h-60 overflow-y-auto">
+          <p className="text-xs text-slate-500 mb-2">
+            Select by segment and/or individual contacts. Contacts marked &quot;Do not contact&quot; or &quot;Unsubscribed&quot; are excluded.
+          </p>
+
+          {segments.length > 0 && (
+            <div className="mb-4">
+              <p className="text-xs font-medium text-slate-600 mb-2">By segment ({selectedSegmentIds.size} selected)</p>
+              <div className="flex flex-wrap gap-2">
+                {segments.map((s) => (
+                  <label
+                    key={s.id}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer text-sm"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedSegmentIds.has(s.id)}
+                      onChange={() => toggleSegment(s.id)}
+                      className="rounded border-slate-300 text-primary focus:ring-primary"
+                    />
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shrink-0"
+                      style={{ backgroundColor: s.color }}
+                    />
+                    <span className="text-slate-800">{s.name}</span>
+                    <span className="text-slate-400 text-xs">({s.contact_count})</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <p className="text-xs font-medium text-slate-600 mb-2">By individual contact ({selectedContactIds.size} selected)</p>
+          <div className="border border-slate-200 rounded-lg max-h-48 overflow-y-auto">
             <div className="p-3 border-b border-slate-100 bg-slate-50/50">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={selectedIds.size === contacts.length && contacts.length > 0}
-                  onChange={toggleAll}
+                  checked={eligibleContacts.length > 0 && selectedContactIds.size === eligibleContacts.length}
+                  onChange={toggleAllContacts}
                   className="rounded border-slate-300 text-primary focus:ring-primary"
                 />
                 <span className="text-sm font-medium">Select all</span>
@@ -153,7 +205,7 @@ export function CampaignForm({
                   >
                     <input
                       type="checkbox"
-                      checked={selectedIds.has(c.id)}
+                      checked={selectedContactIds.has(c.id)}
                       onChange={() => toggleContact(c.id)}
                       className="rounded border-slate-300 text-primary focus:ring-primary"
                     />
@@ -173,7 +225,7 @@ export function CampaignForm({
       <div className="mt-8 flex gap-4">
         <button
           type="submit"
-          disabled={loading || templates.length === 0}
+          disabled={loading || templates.length === 0 || !hasRecipients}
           className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-all disabled:opacity-70"
         >
           {loading ? "Creating..." : "Create campaign"}

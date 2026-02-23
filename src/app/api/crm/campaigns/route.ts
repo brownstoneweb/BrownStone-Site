@@ -13,6 +13,7 @@ const createCampaignSchema = z.object({
   type: z.enum(["cold", "newsletter"]).optional(),
   template_id: z.string().uuid().optional().nullable(),
   contact_ids: z.array(z.string().uuid()).optional(),
+  segment_ids: z.array(z.string().uuid()).optional(),
 });
 
 export async function GET() {
@@ -76,11 +77,31 @@ export async function POST(request: Request) {
       type: parsed.data.type ?? "cold",
       template_id: parsed.data.template_id ?? null,
     });
-    if (parsed.data.contact_ids?.length) {
+
+    let contactIds = new Set<string>(parsed.data.contact_ids ?? []);
+
+    if (parsed.data.segment_ids?.length) {
+      const { data: members } = await supabase
+        .from("contact_segment_members")
+        .select("contact_id")
+        .in("segment_id", parsed.data.segment_ids);
+      const segmentContactIds = [...new Set((members ?? []).map((r: { contact_id: string }) => r.contact_id))];
+      if (segmentContactIds.length > 0) {
+        const { data: contacts } = await supabase
+          .from("contacts")
+          .select("id, do_not_contact, unsubscribed")
+          .in("id", segmentContactIds);
+        (contacts ?? [])
+          .filter((c: { do_not_contact?: boolean; unsubscribed?: boolean }) => !c.do_not_contact && !c.unsubscribed)
+          .forEach((c: { id: string }) => contactIds.add(c.id));
+      }
+    }
+
+    if (contactIds.size > 0) {
       await addContactsToCampaign(
         supabase,
         campaign.id,
-        parsed.data.contact_ids
+        Array.from(contactIds)
       );
     }
     logAuditFromRequest(request, {

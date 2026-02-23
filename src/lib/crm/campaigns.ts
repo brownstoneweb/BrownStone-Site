@@ -113,17 +113,99 @@ export async function getEmailsSentThisHour(
 export async function canSendMoreEmails(
   supabase: SupabaseClient<Database>
 ): Promise<{ ok: boolean; limit: string; sentThisHour?: number; sentToday?: number }> {
-  const [today, thisHour] = await Promise.all([
-    getEmailsSentToday(supabase),
-    getEmailsSentThisHour(supabase),
+  const status = await getSendLimitStatus(supabase);
+  return {
+    ok: status.canSend,
+    limit: status.limit,
+    sentThisHour: status.sentThisHour,
+    sentToday: status.sentToday,
+  };
+}
+
+export type SendLimitStatus = {
+  canSend: boolean;
+  limit: string;
+  sentThisHour: number;
+  sentToday: number;
+  retryAfterSeconds?: number;
+};
+
+export async function getSendLimitStatus(
+  supabase: SupabaseClient<Database>
+): Promise<SendLimitStatus> {
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const [
+    { count: sentToday },
+    { count: sentThisHour },
+    { data: oldestThisHour },
+    { data: oldestToday },
+  ] = await Promise.all([
+    supabase
+      .from("campaign_emails")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "sent")
+      .gte("sent_at", startOfDay.toISOString()),
+    supabase
+      .from("campaign_emails")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "sent")
+      .gte("sent_at", oneHourAgo.toISOString()),
+    supabase
+      .from("campaign_emails")
+      .select("sent_at")
+      .eq("status", "sent")
+      .gte("sent_at", oneHourAgo.toISOString())
+      .order("sent_at", { ascending: true })
+      .limit(1),
+    supabase
+      .from("campaign_emails")
+      .select("sent_at")
+      .eq("status", "sent")
+      .gte("sent_at", startOfDay.toISOString())
+      .order("sent_at", { ascending: true })
+      .limit(1),
   ]);
+
+  const today = sentToday ?? 0;
+  const thisHour = sentThisHour ?? 0;
+
   if (today >= MAX_EMAILS_PER_DAY) {
-    return { ok: false, limit: `Daily limit (${MAX_EMAILS_PER_DAY}) reached`, sentThisHour: thisHour, sentToday: today };
+    const midnight = new Date();
+    midnight.setDate(midnight.getDate() + 1);
+    midnight.setHours(0, 0, 0, 0);
+    const retryAfterSeconds = Math.ceil((midnight.getTime() - Date.now()) / 1000);
+    return {
+      canSend: false,
+      limit: `Daily limit (${MAX_EMAILS_PER_DAY}) reached`,
+      sentThisHour: thisHour,
+      sentToday: today,
+      retryAfterSeconds: Math.max(0, retryAfterSeconds),
+    };
   }
+
   if (thisHour >= MAX_EMAILS_PER_HOUR) {
-    return { ok: false, limit: `Hourly limit (${MAX_EMAILS_PER_HOUR}) reached`, sentThisHour: thisHour, sentToday: today };
+    const oldestSentAt = (oldestThisHour?.[0] as { sent_at: string } | undefined)?.sent_at;
+    const retryAfterSeconds = oldestSentAt
+      ? Math.ceil(60 * 60 - (Date.now() - new Date(oldestSentAt).getTime()) / 1000)
+      : 60 * 60;
+    return {
+      canSend: false,
+      limit: `Hourly limit (${MAX_EMAILS_PER_HOUR}) reached`,
+      sentThisHour: thisHour,
+      sentToday: today,
+      retryAfterSeconds: Math.max(0, retryAfterSeconds),
+    };
   }
-  return { ok: true, limit: "", sentThisHour: thisHour, sentToday: today };
+
+  return {
+    canSend: true,
+    limit: "",
+    sentThisHour: thisHour,
+    sentToday: today,
+  };
 }
 
 export function buildContactVars(contact: {
