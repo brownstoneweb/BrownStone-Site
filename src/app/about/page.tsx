@@ -20,6 +20,10 @@ export default function About() {
             <img
               src={assetUrl("celestia-phase2.webp")}
               alt="Brownstone Construction Celestia phase two development"
+              width={1920}
+              height={1080}
+              fetchPriority="high"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover object-center"
             />
             <div className="absolute inset-0 bg-black/50 z-10" />

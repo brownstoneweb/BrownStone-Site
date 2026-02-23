@@ -119,6 +119,10 @@ function PortfolioContent() {
         <section className="relative min-h-[350px] sm:min-h-[450px] md:min-h-[500px] h-[50vh] sm:h-[55vh] md:h-[60vh] w-full flex items-center justify-center overflow-hidden">
           <img
             alt="Brownstone Construction portfolio of luxury developments"
+            width={1920}
+            height={1080}
+            fetchPriority="high"
+            decoding="async"
             className="absolute inset-0 w-full h-full object-cover"
             src={assetUrl("WilmaCrescent/wilmacresent1.webp")}
           />
@@ -183,6 +187,8 @@ function PortfolioContent() {
                 <img
                   alt={alt}
                   src={src}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-auto block transition-transform duration-300"
                 />
               </button>
@@ -262,6 +268,10 @@ function PortfolioFallback() {
         <section className="relative min-h-[350px] sm:min-h-[450px] md:min-h-[500px] h-[50vh] sm:h-[55vh] md:h-[60vh] w-full flex items-center justify-center overflow-hidden">
           <img
             alt="Brownstone Construction portfolio of luxury developments"
+            width={1920}
+            height={1080}
+            fetchPriority="high"
+            decoding="async"
             className="absolute inset-0 w-full h-full object-cover"
             src={assetUrl("WilmaCrescent/wilmacresent1.webp")}
           />

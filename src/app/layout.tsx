@@ -75,8 +75,14 @@ export default function RootLayout({
     ],
   };
 
+  const heroImageUrl = "https://pub-3e7b2072ee7b4288bdc8a3613d022372.r2.dev/main/lakehouse-wide.webp";
+
   return (
     <html lang="en" className={`${manrope.variable} ${playfair.variable}`}>
+      <head>
+        <link rel="preload" as="image" href={heroImageUrl} />
+        <link rel="alternate" type="text/plain" href={`${baseUrl}/llms.txt`} title="llms.txt" />
+      </head>
       <body className="min-h-screen bg-white text-dark-brown antialiased">
         <script
           type="application/ld+json"

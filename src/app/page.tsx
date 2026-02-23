@@ -20,6 +20,10 @@ export default function Home() {
             <img
               src="https://pub-3e7b2072ee7b4288bdc8a3613d022372.r2.dev/main/lakehouse-wide.webp"
               alt="Brownstone Construction luxury development and modern architecture"
+              width={1920}
+              height={1080}
+              fetchPriority="high"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover object-center scale-105"
             />
           </div>
@@ -67,6 +71,10 @@ export default function Home() {
               <img
                 src={assetUrl("TOWNHOMEUNIT-portrait.webp")}
                 alt="Brownstone Construction townhome unit portrait – luxury residential development"
+                width={800}
+                height={1000}
+                fetchPriority="high"
+                decoding="async"
                 className="aspect-[4/5] w-full object-cover object-center rounded-xl shadow-2xl"
               />
               <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-corporate-blue rounded-xl p-8 flex flex-col justify-center text-white hidden md:flex">
@@ -172,6 +180,10 @@ export default function Home() {
                   <img
                     src={img}
                     alt={alt}
+                    width={800}
+                    height={1000}
+                    loading="lazy"
+                    decoding="async"
                     className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-earthy via-transparent to-transparent opacity-90" />

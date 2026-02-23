@@ -42,6 +42,10 @@ export default function CelestiaPage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             alt="Celestia Akosombo luxury townhouse exterior with modern gabled roof"
+            width={1920}
+            height={1080}
+            fetchPriority="high"
+            decoding="async"
             className="h-full w-full object-cover scale-105"
             src={heroImage}
           />
