@@ -24,11 +24,11 @@ const baseUrl =
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Brownstone Construction | Luxury Construction in Accra",
-    template: "%s | Brownstone Construction",
+    default: "Brownstone Construction Firm Ltd | Luxury Construction in Accra",
+    template: "%s | Brownstone Construction Firm Ltd",
   },
   description:
-    "Premium construction and real estate development in Accra, Ghana. Reinventing Africa's future, brick by brick.",
+    "Brownstone Construction Firm Ltd delivers luxury construction and sustainable real estate development in Accra, Ghana. Explore our projects and build Africa's future, brick by brick.",
   icons: {
     icon: "/favicon.ico",
   },

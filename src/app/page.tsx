@@ -6,6 +6,9 @@ import { assetUrl } from "@/lib/assets";
 
 export const metadata = {
   alternates: { canonical: "/" },
+  title: "Brownstone Construction Firm Ltd | Luxury Construction in Accra, Ghana",
+  description:
+    "Brownstone Construction Firm Ltd delivers luxury construction and sustainable real estate development in Accra, Ghana. Explore our projects and build Africa's future, brick by brick.",
 };
 
 export default function Home() {
@@ -93,7 +96,7 @@ export default function Home() {
                 </span>
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-earthy leading-tight font-serif">
-                Who We Are
+                Who We Are – Brownstone Construction Firm Ltd
               </h2>
               <p className="text-lg text-earthy/70 leading-relaxed font-light">
                 Brownstone Construction Limited is dedicated to luxury,
@@ -154,7 +157,7 @@ export default function Home() {
                     The Collection
                   </span>
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-earthy font-serif">Featured Projects</h2>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-earthy font-serif">Featured Construction Projects</h2>
                 <p className="text-earthy/60 font-light">
                   Explore our portfolio of high-end residences and
                   commercial spaces across the continent.
@@ -213,7 +216,7 @@ export default function Home() {
                 Why Choose Us
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white font-serif">
-                Excellence in Every Detail
+                Excellence in Luxury Construction
               </h2>
               <div className="h-1 w-20 bg-primary mx-auto" />
             </div>
