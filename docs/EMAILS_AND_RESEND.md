@@ -1,4 +1,4 @@
-# Email Templates & Resend Configuration
+# Email Templates & Postmark Configuration
 
 ## Email template locations
 
@@ -7,7 +7,7 @@ All email templates live in **`src/lib/emails/`**:
 | File | Purpose | Logo used |
 |------|---------|-----------|
 | **`contact-received.ts`** | Auto-reply when someone submits the main contact form. | Brownstone logo (optional, via `BROWNSTONE_LOGO_URL`) |
-| **`lakehouse-thank-you.ts`** | Legacy Lakehouse “exclusive details” email. Replaced in behaviour by Celestia brochure (see below). | Celestia logo |
+| **`lakehouse-thank-you.ts`** | Legacy Lakehouse "exclusive details" email. Replaced in behaviour by Celestia brochure (see below). | Celestia logo |
 | **`celestia-brochure.ts`** | **Celestia property brochure** — sent when a user requests the brochure on Celestia, townhouses, or Lakehouse. Townhouse (Phase 1) and Lakehouse highlights, Brownstone colors, optional PDF link. | Celestia logo (`CelestiaLogo-bstone.png`) |
 
 ### Logo URLs
@@ -26,7 +26,7 @@ All email templates live in **`src/lib/emails/`**:
    - **Celestia** main page CTA  
    - **Townhouses** page CTA  
    - **Lakehouse** page (Jetty form)
-2. Frontend shows: *“Thank you for taking the time to explore our website. We've sent the brochure to your email.”*
+2. Frontend shows: *"Thank you for taking the time to explore our website. We've sent the brochure to your email."*
 3. Backend sends **one automated email** using the **Celestia brochure** template (`celestia-brochure.ts`).
 
 ### API and components
@@ -37,19 +37,19 @@ All email templates live in **`src/lib/emails/`**:
 
 ### Optional: brochure PDF
 
-To include a **“Download PDF Brochure”** link in the Celestia brochure email:
+To include a **"Download PDF Brochure"** link in the Celestia brochure email:
 
 - Upload your PDF (e.g. to R2 or a public URL).
 - Set in env:
   - **`BROCHURE_PDF_URL`** = full URL to the PDF (e.g. `https://pub-xxx.r2.dev/main/celestia-brochure.pdf`).
 
-If `BROCHURE_PDF_URL` is not set, the email still sends; it just omits the download block and keeps the “View Townhouses” / “Explore the Lakehouse” links.
+If `BROCHURE_PDF_URL` is not set, the email still sends; it just omits the download block and keeps the "View Townhouses" / "Explore the Lakehouse" links.
 
 ---
 
 ## Sender addresses (Postmark)
 
-This project uses **Postmark** for sending. Each flow can use a **different sender** so forms and campaigns don’t all show the same “From” address.
+This project uses **Postmark** for sending. Each flow can use a **different sender** so forms and campaigns don't all show the same "From" address.
 
 | Flow | Env var | Example |
 |------|---------|--------|
@@ -83,37 +83,11 @@ Required env:
 
 **No confusion:** `CONTACTFORMMAIL` is the **recipient** — the inbox that receives the inquiry (e.g. `creative@brownstoneltd.com`). `POSTMARK_FROM_CONTACT` is the **sender** — the From name and address shown on the email (e.g. `Brownstone Contact Form <noreply@brownstoneltd.com>`). So the team receives at creative@; the user sees the message as coming from noreply@. Both are independent.
 
-**Important:** Verify your domain in Postmark (Sender Signatures) so mail doesn’t show “via postmarkapp.com” and land in spam.
+**Important:** Verify your domain in Postmark (Sender Signatures) so mail doesn't show "via postmarkapp.com" and land in spam.
 
-### Newsletters with Resend
+### Newsletter signups
 
-You have two main patterns:
-
-1. **Transactional only (current)**  
-   Each email is triggered by a user action (contact, brochure request). No “list” or “broadcast” in Resend. Good for: contact auto-reply, brochure, one-off notifications.
-
-2. **Newsletter / broadcast list**  
-   Resend supports [Audiences](https://resend.com/docs/dashboard/audiences/contacts) and [Broadcasts](https://resend.com/docs/dashboard/broadcasts/send-broadcast):
-
-   - **Audience:** Create an audience (e.g. “Newsletter”), add contacts (email + optional fields). Contacts can come from:
-     - Manual add in Resend dashboard, or  
-     - Your app calling [Resend Contacts API](https://resend.com/docs/api-reference/contacts/create-contact) when users subscribe (e.g. from a “Subscribe to newsletter” form).
-   - **Broadcast:** Create a campaign, choose audience, compose HTML (or use a template), send or schedule.
-
-So for “newsletters”:
-
-- **Option A — Resend dashboard only:**  
-  Add subscribers manually or via CSV in Resend; write and send broadcasts in the dashboard. No code change.
-
-- **Option B — App collects, Resend sends:**  
-  - Add a “Newsletter” signup (e.g. on blog or footer) that POSTs to your API.  
-  - Your API calls Resend’s API to add the contact to an audience (and optionally sends a double-opt-in or thank-you email via Resend).  
-  - When you want to send a newsletter, use Resend’s dashboard (or their API) to send a broadcast to that audience.
-
-If you want, we can add a small **newsletter signup API** that:
-- Accepts `email` (and consent),
-- Calls Resend to add the contact to an audience,
-- Optionally sends a short “You’re subscribed” email using a new template in `src/lib/emails/`.
+Newsletter signups from the blog are stored as **leads** (source: Newsletter) and as **contacts** in the CRM. Use **Admin → Campaigns** to send emails to contacts (including newsletter subscribers). All sending is done via Postmark.
 
 ---
 
@@ -129,12 +103,12 @@ Without `SUPABASE_SERVICE_ROLE_KEY`, leads are not stored. Check server logs for
 
 **Admin → CRM → Email Templates** and **Campaigns** are for sending cold emails to contacts.
 
-### Sender and “via …” / spam
+### Sender and "via …" / spam
 
-- **Use a clear, professional From** so the inbox shows e.g. **“Candace from Brownstone”** with your domain, not a generic or relay address. Set **`POSTMARK_FROM_CAMPAIGNS`** to a real name + verified address, for example:
+- **Use a clear, professional From** so the inbox shows e.g. **"Candace from Brownstone"** with your domain, not a generic or relay address. Set **`POSTMARK_FROM_CAMPAIGNS`** to a real name + verified address, for example:
   - `Candace from Brownstone <candace@brownstoneltd.com>`  
   - or `Candace from Brownstone <hello@brownstoneltd.com>`
-- If the recipient sees **“via postmarkapp.com”** (or similar), your **sending domain is not fully authenticated**. Add and verify **brownstoneltd.com** in [Postmark → Sender Signatures](https://account.postmarkapp.com/sender_signatures): add the domain, then add the DNS records Postmark gives you. After that, mail sends from your domain and the “via” line and spam risk go down.
+- If the recipient sees **"via postmarkapp.com"** (or similar), your **sending domain is not fully authenticated**. Add and verify **brownstoneltd.com** in [Postmark → Sender Signatures](https://account.postmarkapp.com/sender_signatures): add the domain, then add the DNS records Postmark gives you. After that, mail sends from your domain and the "via" line and spam risk go down.
 - Set **`POSTMARK_REPLY_TO`** so replies go to the right inbox (e.g. `candace@brownstoneltd.com`).
 
 Using a real name + verified domain helps deliverability and makes the email look like a 1:1 message rather than bulk marketing.
@@ -149,14 +123,14 @@ In **Email Templates**, the **Body** field accepts **plain text or HTML**. If yo
 
 - **Per hour:** Default **20** emails. Set **`CRM_MAX_EMAILS_PER_HOUR`** in `.env` (e.g. `10` for 10/hour).
 - **Per day:** Default **50** emails. Set **`CRM_MAX_EMAILS_PER_DAY`** to change.
-- Each **“Send batch”** click sends **up to 10** emails, but never more than your **remaining quota** in the current hour (and day).  
-  Example: limit 10/hour, you already sent 3 this hour → next click sends **7** (the remaining 7). After that, the button won’t send until the next hour (or you’ll see “Hourly limit reached”).
+- Each **"Send batch"** click sends **up to 10** emails, but never more than your **remaining quota** in the current hour (and day).  
+  Example: limit 10/hour, you already sent 3 this hour → next click sends **7** (the remaining 7). After that, the button won't send until the next hour (or you'll see "Hourly limit reached").
 
 ## Email deliverability (avoiding Promotions and Spam)
 
-1. **Verify your domain in Postmark** — [Postmark → Sender Signatures](https://account.postmarkapp.com/sender_signatures): add `brownstoneltd.com`, add the SPF/DKIM records to your DNS. Until the domain is verified, mail can show “via postmarkapp.com” and land in Spam.
+1. **Verify your domain in Postmark** — [Postmark → Sender Signatures](https://account.postmarkapp.com/sender_signatures): add `brownstoneltd.com`, add the SPF/DKIM records to your DNS. Until the domain is verified, mail can show "via postmarkapp.com" and land in Spam.
 2. **Use a real name + your domain for campaigns** — set `POSTMARK_FROM_CAMPAIGNS` (e.g. `Candace from Brownstone <candace@brownstoneltd.com>`).
-3. **Brochure/transactional** — Set `POSTMARK_REPLY_TO` (e.g. `info@brownstoneltd.com`). The contact auto-reply and brochure emails already encourage “reply to this email” and “add us to your contacts” in the copy; no extra change needed.
+3. **Brochure/transactional** — Set `POSTMARK_REPLY_TO` (e.g. `info@brownstoneltd.com`). The contact auto-reply and brochure emails already encourage "reply to this email" and "add us to your contacts" in the copy; no extra change needed.
 4. Avoid leading/trailing spaces in from-address env vars (code trims automatically).
 
 ## Env summary
@@ -176,7 +150,7 @@ In **Email Templates**, the **Body** field accepts **plain text or HTML**. If yo
 | `EMAIL_LEAD_NOTIFY` | Optional. Email address to notify when a new lead is created (contact, brochure, lakehouse, newsletter). |
 | `BROWNSTONE_LOGO_URL` | Optional. Logo URL for contact auto-reply (other emails). |
 | `BROCHURE_PDF_URL` | Optional. URL of Celestia brochure PDF. |
-| `BROCHURE_PDF_URL_TOWNHOUSE` | Optional. URL of townhouse brochure PDF. | for the “Download PDF” link in brochure email. |
+| `BROCHURE_PDF_URL_TOWNHOUSE` | Optional. URL of townhouse brochure PDF. | for the "Download PDF" link in brochure email. |
 | `NEXT_PUBLIC_SITE_URL` | Base URL for links in emails (e.g. `https://brownstoneltd.com`). |
 | `CRM_MAX_EMAILS_PER_HOUR` | Max campaign emails per hour (default 20). Use e.g. `10` for 10/hour. Each click sends up to 10 or the remaining in that hour. |
 | `CRM_MAX_EMAILS_PER_DAY` | Max campaign emails per day (default 50). |

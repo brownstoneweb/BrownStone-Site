@@ -62,7 +62,7 @@ export default function RootLayout({
     },
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "+233-244-028-773",
+      telephone: "+233-244-028-8485",
       email: "info@brownstoneltd.com",
       contactType: "customer service",
     },

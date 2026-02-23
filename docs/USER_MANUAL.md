@@ -653,7 +653,7 @@ This section describes the pages that visitors see on the public website. As a t
 The landing page introduces Brownstone Construction with:
 - A hero section with a call-to-action.
 - Company values: Luxury, Sustainability, Precision.
-- Featured projects: Celestia, East Legon Trio, Wilma Crescent.
+- Featured projects: Celestia, East Legon Trio, Wilman Crescent.
 - "Why Choose Us" section highlighting Master Planning, Quality Assurance, Smart Integration, and Client Partnership.
 - A contact call-to-action at the bottom.
 
@@ -677,7 +677,7 @@ Showcases the six service categories:
 
 ### 15.4 Portfolio Page
 
-A visual gallery of completed and in-progress projects. Visitors can filter by project (Celestia, East Legon Trio, Wilma Crescent, Others) and view images in a lightbox.
+A visual gallery of completed and in-progress projects. Visitors can filter by project (Celestia, East Legon Trio, Wilman Crescent, Others) and view images in a lightbox.
 
 ### 15.5 Celestia Pages
 

@@ -172,7 +172,7 @@ export default function About() {
                 </div>
                 <div className="p-5">
                   <h3 className="text-earthy text-xl font-bold font-serif">Dr. Candace Baker</h3>
-                  <p className="text-grey text-sm font-semibold mt-1">Personal Assistant to CEO</p>
+                  <p className="text-grey text-sm font-semibold mt-1">Business Developer / Executive Assistant</p>
                 </div>
               </div>
             </div>
@@ -188,12 +188,14 @@ export default function About() {
               Our team engineers strategy, operations, creativity, and business growth across all
               projects.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
               {[
-                { name: "Mahlon Clottey", role: "Creative Developer", placeholder: "https://placehold.co/96x96/e8e6e3/181311?text=MC&font=serif" },
-                { name: "Batista Simons", role: "Creative Designer", placeholder: "https://placehold.co/96x96/e8e6e3/181311?text=BS&font=serif" },
-                { name: "Stacey Sodokeh", role: "Office Manager", placeholder: "https://placehold.co/96x96/e8e6e3/181311?text=SS&font=serif" },
-              ].map(({ name, role, placeholder }) => (
+                { name: "Mahlon Clottey", role: "Creative Developer" },
+                { name: "Senyo Augustine", role: "Accountant" },
+              ].map(({ name, role }) => {
+                const initials = name.split(" ").map((n) => n[0]).join("").slice(0, 2);
+                const placeholder = `https://placehold.co/96x96/e8e6e3/181311?text=${initials}&font=serif`;
+                return (
                 <div
                   key={name}
                   className="rounded-xl border border-earthy/10 bg-white overflow-hidden shadow-sm text-center max-w-[200px] mx-auto sm:mx-0"
@@ -210,7 +212,8 @@ export default function About() {
                     <p className="text-grey text-xs font-semibold mt-0.5">{role}</p>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>

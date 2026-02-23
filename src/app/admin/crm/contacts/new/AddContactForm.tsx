@@ -121,7 +121,7 @@ export function AddContactForm() {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             className="w-full px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 outline-none"
-            placeholder="+233 24 402 8773"
+            placeholder="+233 24 402 8485"
           />
         </div>
         <div>

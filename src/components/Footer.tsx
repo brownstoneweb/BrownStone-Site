@@ -139,8 +139,8 @@ export default function Footer() {
               >
                 info@brownstoneltd.com
               </a>
-              <a href="tel:+233244028773" className="hover:text-primary transition-colors">
-                +233 244 028 773
+              <a href="tel:+2332440288485" className="hover:text-primary transition-colors">
+                +233 244 028 8485
               </a>
             </div>
           </div>

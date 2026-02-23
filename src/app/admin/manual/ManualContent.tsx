@@ -756,7 +756,7 @@ export function ManualContent() {
         <UL>
           <Li>A hero section with a call-to-action.</Li>
           <Li>Company values: Luxury, Sustainability, Precision.</Li>
-          <Li>Featured projects: Celestia, East Legon Trio, Wilma Crescent.</Li>
+          <Li>Featured projects: Celestia, East Legon Trio, Wilman Crescent.</Li>
           <Li>&ldquo;Why Choose Us&rdquo; section highlighting Master Planning, Quality Assurance, Smart Integration, and Client Partnership.</Li>
           <Li>A contact call-to-action at the bottom.</Li>
         </UL>
@@ -782,7 +782,7 @@ export function ManualContent() {
         </OL>
 
         <H3 id="portfolio-page">15.4 Portfolio Page</H3>
-        <P>A visual gallery of completed and in-progress projects. Visitors can filter by project (Celestia, East Legon Trio, Wilma Crescent, Others) and view images in a lightbox.</P>
+        <P>A visual gallery of completed and in-progress projects. Visitors can filter by project (Celestia, East Legon Trio, Wilman Crescent, Others) and view images in a lightbox.</P>
 
         <H3 id="celestia-pages">15.5 Celestia Pages</H3>
         <P>Celestia is the flagship luxury residential development in Akosombo, Ghana (90 minutes from Accra). The Celestia section includes:</P>

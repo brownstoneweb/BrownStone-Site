@@ -133,7 +133,7 @@ export function ImportContacts({
     const header = "email,name,phone,country_code,company,source";
     const rows = [
       "jane@example.com,Jane Doe,+1 555 123 4567,+1,Acme Realty,referral",
-      "kwame@example.com,Kwame Mensah,024 402 8773,+233,Mensah Estates,cold_outreach",
+      "kwame@example.com,Kwame Mensah,024 402 8485,+233,Mensah Estates,cold_outreach",
       "info@globalcorp.com,Sarah Chen,,+44,Global Corp,newsletter",
     ];
     const csv = [header, ...rows].join("\n");

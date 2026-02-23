@@ -148,7 +148,7 @@ export default function Home() {
                 </div>
                 <h2 className="text-3xl sm:text-4xl font-extrabold text-earthy font-serif">Featured Projects</h2>
                 <p className="text-earthy/60 font-light">
-                  Explore our award-winning portfolio of high-end residences and
+                  Explore our portfolio of high-end residences and
                   commercial spaces across the continent.
                 </p>
               </div>
@@ -163,7 +163,7 @@ export default function Home() {
               {[
                 { location: "Akosombo", title: "Celestia", href: "/celestia", img: assetUrl("CHALETS_.webp"), alt: "Celestia chalets at Akosombo – luxury residential development" },
                 { location: "East Legon", title: "East Legon Trio", href: "/portfolio?project=east-legon", img: assetUrl("east-legon-townhouses2.webp"), alt: "East Legon Trio townhouses – East Legon development" },
-                { location: "Adjiringanor", title: "Wilma Crescent", href: "/portfolio?project=wilma-crescent", img: assetUrl("WilmaCrescent/wilmacresent1.webp"), alt: "Wilma Crescent development" },
+                { location: "Adjiringanor", title: "Wilman Crescent", href: "/portfolio?project=wilma-crescent", img: assetUrl("WilmaCrescent/wilmacresent1.webp"), alt: "Wilman Crescent development" },
               ].map(({ location, title, href, img, alt }) => (
                 <div
                   key={title}
@@ -264,7 +264,7 @@ export default function Home() {
                       <p className="text-xs text-white/50 uppercase font-bold">
                         Call Us Direct
                       </p>
-                      <a href="tel:+233244028773" className="font-bold hover:text-primary transition-colors">+233 244 028 773</a>
+                      <a href="tel:+2332440288485" className="font-bold hover:text-primary transition-colors">+233 244 028 8485</a>
                     </div>
                   </div>
                 </div>

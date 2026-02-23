@@ -32,11 +32,11 @@ const eastLegonImages = [
 ];
 
 const wilmaCrescentImages = [
-  { src: assetUrl("WilmaCrescent/wilmacresent1.webp"), alt: "Wilma Crescent development" },
-  { src: assetUrl("WilmaCrescent/wilmacresent2.webp"), alt: "Wilma Crescent" },
-  { src: assetUrl("WilmaCrescent/wilmacresent3.webp"), alt: "Wilma Crescent project" },
-  { src: assetUrl("WilmaCrescent/wilmacresent4.webp"), alt: "Wilma Crescent view" },
-  { src: assetUrl("WilmaCrescent/wilmacresent5.webp"), alt: "Wilma Crescent" },
+  { src: assetUrl("WilmaCrescent/wilmacresent1.webp"), alt: "Wilman Crescent development" },
+  { src: assetUrl("WilmaCrescent/wilmacresent2.webp"), alt: "Wilman Crescent" },
+  { src: assetUrl("WilmaCrescent/wilmacresent3.webp"), alt: "Wilman Crescent project" },
+  { src: assetUrl("WilmaCrescent/wilmacresent4.webp"), alt: "Wilman Crescent view" },
+  { src: assetUrl("WilmaCrescent/wilmacresent5.webp"), alt: "Wilman Crescent" },
 ];
 
 const othersImages = [
@@ -50,7 +50,7 @@ const othersImages = [
 const tabs = [
   { id: "celestia" as const, label: "Celestia" },
   { id: "east-legon" as const, label: "East Legon Trio" },
-  { id: "wilma-crescent" as const, label: "Wilma Crescent" },
+  { id: "wilma-crescent" as const, label: "Wilman Crescent" },
   { id: "others" as const, label: "Others" },
 ];
 
@@ -143,7 +143,7 @@ function PortfolioContent() {
               </h2>
               <p className="text-grey text-lg font-light leading-relaxed max-w-xl">
                 A curated selection of high-end residential estates,
-                award-winning community centers, and carbon-neutral
+                community centers, and carbon-neutral
                 infrastructure.
               </p>
             </div>
@@ -285,7 +285,7 @@ function PortfolioFallback() {
               </h2>
               <p className="text-grey text-lg font-light leading-relaxed max-w-xl">
                 A curated selection of high-end residential estates,
-                award-winning community centers, and carbon-neutral
+                community centers, and carbon-neutral
                 infrastructure.
               </p>
             </div>

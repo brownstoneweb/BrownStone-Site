@@ -205,7 +205,7 @@ export function CampaignDetailClient({
           <button
             type="button"
             onClick={handleSend}
-            disabled={sending || (sendLimit && !sendLimit.canSend)}
+            disabled={sending || (sendLimit != null && !sendLimit.canSend)}
             className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-semibold text-sm disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {sending ? "Sending..." : `Send batch (up to 10)`}

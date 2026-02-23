@@ -566,14 +566,14 @@ This setup works well on Vercel.
 
 - **Next.js** – Vercel is built for Next.js
 - **Supabase** – external API; works normally from Vercel
-- **Resend** – external API; works normally from Vercel
+- **Postmark** – external API; works normally from Vercel
 - **R2 assets** – served via public URLs; no server-side dependency
 - **Custom domain** – add it in Vercel and point it via Cloudflare (A/CNAME records)
 
 **Vercel configuration:**
 
 1. Add your repo and deploy
-2. Add environment variables from `.env.local` (Supabase, Resend, assets URL, etc.)
+2. Add environment variables from `.env.local` (Supabase, Postmark, assets URL, etc.)
 3. Add your domain in Vercel and update DNS in Cloudflare per Vercel’s instructions (usually a CNAME `cname.vercel-dns.com` or A records)
 
 Your domain and DNS stay in Cloudflare; DMARC and other records live there.
