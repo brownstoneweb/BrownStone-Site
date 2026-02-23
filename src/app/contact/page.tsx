@@ -51,7 +51,7 @@ export default function Contact() {
         <section
           className="h-[400px] flex items-center justify-center text-center relative overflow-hidden"
           style={{
-            backgroundImage: `linear-gradient(rgba(65, 22, 0, 0.4), rgba(65, 22, 0, 0.6)), url('https://assets.brownstoneltd.com/main/airportsquare1.webp')`,
+            backgroundImage: `linear-gradient(rgba(65, 22, 0, 0.4), rgba(65, 22, 0, 0.6)), url('https://pub-3e7b2072ee7b4288bdc8a3613d022372.r2.dev/media/2026/1690d937-12c8-4ed1-befb-9c021344b2e1.webp')`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
@@ -191,7 +191,7 @@ export default function Contact() {
                       <div>
                         <h4 className="font-bold text-brown-deep">Email</h4>
                         <p className="text-neutral-grey leading-relaxed">
-                          <a href="mailto:info@brownstoneltd.com" className="hover:text-primary transition-colors">info@brownstoneltd.com</a>
+                          <a href="mailto:ghanaisthefuture@brownstoneltd.com" className="hover:text-primary transition-colors">ghanaisthefuture@brownstoneltd.com</a>
                         </p>
                       </div>
                     </div>
@@ -269,7 +269,7 @@ export default function Contact() {
               </div>
               <div className="w-full aspect-video rounded-none overflow-hidden">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.773290920585!2d-0.1773421!3d5.6004742!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9ba5321a35ab%3A0xc2611f181b07ac2a!2sBrownStone%20Construction%20Firm%20Ltd!5e0!3m2!1sen!2sgh!4v1770288208927!5m2!1sen!2sgh"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.773290920585!2d-0.1773421!3d5.6004742!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9ba5321a35ab%3A0xc2611f181b07ac2a!2sBrownStone%20Construction%20Firm%20Ltd!5e0!3m2!1sen!2sgh!4v1771864781048!5m2!1sen!2sgh"
                   width="600"
                   height="450"
                   style={{ border: 0, width: "100%", height: "100%", minHeight: "400px" }}

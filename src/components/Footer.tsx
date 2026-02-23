@@ -134,10 +134,10 @@ export default function Footer() {
             <div className="flex flex-col gap-4 text-sm text-white/50">
               <p>1 Airport Square, Accra – Ghana</p>
               <a
-                href="mailto:info@brownstoneltd.com"
+                href="mailto:ghanaisthefuture@brownstoneltd.com"
                 className="hover:text-primary transition-colors"
               >
-                info@brownstoneltd.com
+                ghanaisthefuture@brownstoneltd.com
               </a>
               <a href="tel:+2332440288485" className="hover:text-primary transition-colors">
                 +233 244 028 8485

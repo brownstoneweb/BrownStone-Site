@@ -273,7 +273,7 @@ export default function Home() {
                 className="lg:w-2/5 min-h-[250px] sm:min-h-[300px] bg-cover bg-center grayscale hover:grayscale-0 transition-all duration-1000"
                 style={{
                   backgroundImage:
-                    "url('https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80')",
+                    "url('https://assets.brownstoneltd.com/main/buildingDrawing.webp')",
                 }}
               />
             </div>

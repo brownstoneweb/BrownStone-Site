@@ -151,7 +151,7 @@ export default function About() {
               <div className="w-full max-w-sm rounded-xl border border-earthy/10 bg-white overflow-hidden shadow-sm text-center">
                 <div className="aspect-[3/4] bg-earthy/5 overflow-hidden">
                   <img
-                    src="https://placehold.co/400x533/e8e6e3/181311?text=FYA&font=serif"
+                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='533' viewBox='0 0 400 533'%3E%3Crect width='400' height='533' fill='%23e8e6e3'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Georgia,serif' font-size='72' fill='%23181311'%3EFYA%3C/text%3E%3C/svg%3E"
                     alt="Francis Yeboah Awuah"
                     className="w-full h-full object-cover"
                   />
@@ -165,7 +165,7 @@ export default function About() {
               <div className="w-full max-w-sm rounded-xl border border-earthy/10 bg-white overflow-hidden shadow-sm text-center">
                 <div className="aspect-[3/4] bg-earthy/5 overflow-hidden">
                   <img
-                    src="https://placehold.co/400x533/e8e6e3/181311?text=CB&font=serif"
+                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='533' viewBox='0 0 400 533'%3E%3Crect width='400' height='533' fill='%23e8e6e3'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Georgia,serif' font-size='72' fill='%23181311'%3ECB%3C/text%3E%3C/svg%3E"
                     alt="Dr. Candace Baker"
                     className="w-full h-full object-cover"
                   />
@@ -194,7 +194,7 @@ export default function About() {
                 { name: "Senyo Augustine", role: "Accountant" },
               ].map(({ name, role }) => {
                 const initials = name.split(" ").map((n) => n[0]).join("").slice(0, 2);
-                const placeholder = `https://placehold.co/96x96/e8e6e3/181311?text=${initials}&font=serif`;
+                const placeholder = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' fill='%23e8e6e3'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Georgia,serif' font-size='32' fill='%23181311'%3E${initials}%3C/text%3E%3C/svg%3E`;
                 return (
                 <div
                   key={name}
