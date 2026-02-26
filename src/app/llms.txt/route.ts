@@ -13,7 +13,7 @@ function getLlmsTxt(): string {
 ## Contact
 
 - **Address:** 1 Airport Square, Accra, Ghana
-- **Phone:** +233 244 028 8485
+- **Phone:** 024 402 8485
 - **Email:** ghanaisthefuture@brownstoneltd.com
 - **Website:** ${baseUrl}
 

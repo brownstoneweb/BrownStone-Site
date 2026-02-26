@@ -120,7 +120,12 @@ export default function About() {
                 {
                   year: "2025",
                   title: "Celestia",
-                  desc: "Completed one of our major projects, Celestia—a landmark development that embodies our vision for sustainable, world-class infrastructure and community-focused design.",
+                  desc: "Launched one of our major projects, Celestia—a landmark development that embodies our vision for sustainable, world-class infrastructure and community-focused design.",
+                },
+                {
+                  year: "2026",
+                  title: "Momentum",
+                  desc: "Broke ground on multiple projects, including government schools, kicking off the year with momentum.",
                 },
               ].map(({ year, title, desc }) => (
                 <div key={year} className="mb-12 md:mb-16 relative">

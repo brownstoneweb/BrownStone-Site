@@ -109,10 +109,10 @@ export default function PrivacyPolicy() {
               </a>{" "}
               or call{" "}
               <a
-                href="tel:+2332440288485"
+                href="tel:+233244028485"
                 className="text-primary font-medium hover:underline"
               >
-                +233 244 028 8485
+                024 402 8485
               </a>
               . Brownstone Construction Limited, Accra, Ghana.
             </p>

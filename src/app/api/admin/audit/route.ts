@@ -5,10 +5,14 @@ import { logAuditFromRequest } from "@/lib/audit";
 import { z } from "zod";
 
 const auditSchema = z.object({
-  action: z.enum(["create", "update", "delete", "upload", "view"]),
+  action: z.enum([
+    "create", "update", "delete", "upload", "view",
+    "sign_in", "sign_out", "login_failure", "password_reset", "page_view",
+  ]),
   resource_type: z.enum([
     "contact", "lead", "post", "category", "campaign", "template",
     "segment", "user", "role", "media", "now_selling", "note", "settings",
+    "auth", "page",
   ]),
   resource_id: z.string().max(100).optional(),
   description: z.string().min(1).max(500),
@@ -37,9 +41,9 @@ export async function POST(request: Request) {
 
   logAuditFromRequest(request, {
     userId: user.id,
-    userEmail: user.email,
-    action: parsed.data.action,
-    resourceType: parsed.data.resource_type,
+    userEmail: user.email ?? undefined,
+    action: parsed.data.action as Parameters<typeof logAuditFromRequest>[1]["action"],
+    resourceType: parsed.data.resource_type as Parameters<typeof logAuditFromRequest>[1]["resourceType"],
     resourceId: parsed.data.resource_id,
     description: parsed.data.description,
     metadata: parsed.data.metadata,

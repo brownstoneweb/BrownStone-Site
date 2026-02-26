@@ -50,7 +50,7 @@ export function getContactReceivedHtml(
                 Thank you for getting in touch with Brownstone Construction. We have received your message and will respond as soon as possible, usually within one business day.
               </p>
               <p style="margin:0;font-size:14px;line-height:1.6;color:${MUTED};">
-                If your matter is urgent, you may call us at <a href="tel:+2332440288485" style="color:${PRIMARY};text-decoration:underline;">+233 244 028 8485</a>.
+                If your matter is urgent, you may call us at <a href="tel:+233244028485" style="color:${PRIMARY};text-decoration:underline;">024 402 8485</a>.
               </p>
               <p style="margin:20px 0 0;font-size:14px;line-height:1.6;color:${MUTED};">
                 You can reply directly to this email with any follow-up. Adding us to your contacts helps ensure our response reaches your inbox.
@@ -79,7 +79,7 @@ THANK YOU — We've received your inquiry
 
 Thank you for getting in touch with Brownstone Construction. We have received your message and will respond as soon as possible, usually within one business day.
 
-If your matter is urgent, you may call us at +233 244 028 8485.
+If your matter is urgent, you may call us at 024 402 8485.
 
 You can reply directly to this email with any follow-up. Adding us to your contacts helps ensure our response reaches your inbox.
 

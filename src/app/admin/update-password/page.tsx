@@ -57,6 +57,19 @@ export default function AdminUpdatePasswordPage() {
       setError(err.message);
       return;
     }
+    try {
+      await fetch("/api/admin/audit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "password_reset",
+          resource_type: "auth",
+          description: "Password reset completed",
+        }),
+      });
+    } catch {
+      // ignore
+    }
     setSuccess(true);
     setTimeout(() => router.push("/admin/dashboard"), 1500);
   }

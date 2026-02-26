@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
+import { logAuditFromRequest } from "@/lib/audit";
 
 const log = logger.create("api:auth:reset-password");
 
@@ -50,6 +51,15 @@ export async function POST(request: NextRequest) {
   if (error) {
     log.error("Password reset request failed", error);
   }
+
+  await logAuditFromRequest(request, {
+    userId: null,
+    userEmail: email,
+    action: "password_reset",
+    resourceType: "auth",
+    description: "Password reset requested",
+    metadata: { email },
+  }).catch(() => {});
 
   // Always return success to prevent email enumeration
   return NextResponse.json({ success: true });

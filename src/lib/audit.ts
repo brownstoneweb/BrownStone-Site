@@ -17,6 +17,11 @@ export type AuditAction =
   | "upload"
   | "login"
   | "logout"
+  | "sign_in"
+  | "sign_out"
+  | "login_failure"
+  | "password_reset"
+  | "page_view"
   | "view";
 
 export type AuditResourceType =
@@ -32,10 +37,13 @@ export type AuditResourceType =
   | "media"
   | "now_selling"
   | "note"
-  | "settings";
+  | "settings"
+  | "auth"
+  | "page";
 
 interface AuditEntry {
-  userId: string;
+  /** Omit for auth events like login_failure, password_reset (no user yet). */
+  userId?: string | null;
   userEmail?: string;
   action: AuditAction;
   resourceType: AuditResourceType;
@@ -89,7 +97,7 @@ async function insertAuditLog(entry: AuditEntry): Promise<void> {
   try {
     const admin = createAdminClient();
     await admin.from("admin_audit_log").insert({
-      user_id: entry.userId,
+      user_id: entry.userId ?? null,
       user_email: entry.userEmail || null,
       action: entry.action,
       resource_type: entry.resourceType,

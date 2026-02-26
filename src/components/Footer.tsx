@@ -139,8 +139,8 @@ export default function Footer() {
               >
                 ghanaisthefuture@brownstoneltd.com
               </a>
-              <a href="tel:+2332440288485" className="hover:text-primary transition-colors">
-                +233 244 028 8485
+              <a href="tel:+233244028485" className="hover:text-primary transition-colors">
+                024 402 8485
               </a>
             </div>
           </div>

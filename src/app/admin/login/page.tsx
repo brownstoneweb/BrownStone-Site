@@ -25,14 +25,42 @@ export default function AdminLoginPage() {
     setError("");
     setLoading(true);
     const supabase = createClient();
-    const { error: err } = await supabase.auth.signInWithPassword({
+    const { data, error: err } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    setLoading(false);
     if (err) {
+      setLoading(false);
+      try {
+        await fetch("/api/auth/audit-log", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "login_failure",
+            description: "Failed login attempt",
+            metadata: { email: email.trim().toLowerCase() },
+          }),
+        });
+      } catch {
+        // ignore
+      }
       setError(err.message);
       return;
+    }
+    setLoading(false);
+    try {
+      await fetch("/api/admin/audit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "sign_in",
+          resource_type: "auth",
+          description: "Signed in",
+          metadata: { email: data.user?.email },
+        }),
+      });
+    } catch {
+      // ignore
     }
     router.push(next);
     router.refresh();

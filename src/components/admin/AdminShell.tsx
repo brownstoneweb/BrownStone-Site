@@ -154,6 +154,21 @@ export function AdminShell({
   }, [isCrmPath]);
 
   useEffect(() => {
+    if (!currentUser || hideSidebar || !pathname) return;
+    fetch("/api/admin/audit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "page_view",
+        resource_type: "page",
+        description: `Viewed ${pathname}`,
+        resource_id: pathname,
+        metadata: { path: pathname },
+      }),
+    }).catch(() => {});
+  }, [pathname, currentUser, hideSidebar]);
+
+  useEffect(() => {
     if (isAuthorOnly || !currentUser) return;
     let active = true;
     const poll = async () => {
@@ -173,6 +188,19 @@ export function AdminShell({
   }, [isAuthorOnly, currentUser]);
 
   async function handleLogout() {
+    try {
+      await fetch("/api/admin/audit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "sign_out",
+          resource_type: "auth",
+          description: "Signed out",
+        }),
+      });
+    } catch {
+      // ignore
+    }
     try {
       const supabase = createClient();
       if (supabase?.auth) {

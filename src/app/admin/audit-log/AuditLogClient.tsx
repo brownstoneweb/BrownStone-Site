@@ -28,16 +28,25 @@ const ACTION_COLORS: Record<string, string> = {
   invite: "bg-teal-100 text-teal-700",
   upload: "bg-cyan-100 text-cyan-700",
   login: "bg-slate-100 text-slate-700",
+  logout: "bg-slate-100 text-slate-600",
+  sign_in: "bg-emerald-100 text-emerald-700",
+  sign_out: "bg-slate-200 text-slate-700",
+  login_failure: "bg-red-100 text-red-700",
+  password_reset: "bg-violet-100 text-violet-700",
+  page_view: "bg-sky-100 text-sky-700",
+  view: "bg-slate-100 text-slate-600",
 };
 
 const ALL_ACTIONS = [
   "create", "update", "delete", "bulk_delete", "import",
   "send", "assign_role", "remove_role", "invite", "upload",
+  "sign_in", "sign_out", "login_failure", "password_reset", "page_view", "view",
 ];
 
 const ALL_RESOURCE_TYPES = [
   "contact", "lead", "post", "category", "campaign", "template",
   "segment", "user", "role", "media", "now_selling", "note",
+  "auth", "page",
 ];
 
 function parseBrowser(ua: string | null): string {

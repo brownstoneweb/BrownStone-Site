@@ -3,6 +3,7 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { FaIcon } from "@/components/Icons";
 import { assetUrl } from "@/lib/assets";
+import { TechCarouselSection } from "@/components/home/TechCarouselSection";
 
 export const metadata = {
   alternates: { canonical: "/" },
@@ -146,6 +147,8 @@ export default function Home() {
           </div>
         </section>
 
+        <TechCarouselSection />
+
         {/* Featured Projects */}
         <section className="py-24 bg-white">
           <div className="max-w-7xl mx-auto px-6">
@@ -279,7 +282,7 @@ export default function Home() {
                       <p className="text-xs text-white/50 uppercase font-bold">
                         Call Us Direct
                       </p>
-                      <a href="tel:+2332440288485" className="font-bold hover:text-primary transition-colors">+233 244 028 8485</a>
+                      <a href="tel:+233244028485" className="font-bold hover:text-primary transition-colors">024 402 8485</a>
                     </div>
                   </div>
                 </div>
