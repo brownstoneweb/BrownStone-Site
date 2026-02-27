@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { getUserRoles, isAdmin } from "@/lib/supabase/auth";
+import { getUserRoles, canManageCategories } from "@/lib/supabase/auth";
 import { logAuditFromAction } from "@/lib/audit";
 
 function slugify(text: string): string {
@@ -17,7 +17,7 @@ function slugify(text: string): string {
 export async function createCategory(formData: FormData) {
   const supabase = await createClient();
   const roles = await getUserRoles();
-  if (!isAdmin(roles)) return { error: "Forbidden" };
+  if (!canManageCategories(roles)) return { error: "Forbidden" };
 
   const name = (formData.get("name") as string)?.trim();
   if (!name) return { error: "Name is required" };
@@ -53,7 +53,7 @@ export async function updateCategory(
 ) {
   const supabase = await createClient();
   const roles = await getUserRoles();
-  if (!isAdmin(roles)) return { error: "Forbidden" };
+  if (!canManageCategories(roles)) return { error: "Forbidden" };
 
   const name = (formData.get("name") as string)?.trim();
   const slug = (formData.get("slug") as string)?.trim();
@@ -87,7 +87,7 @@ export async function updateCategory(
 export async function deleteCategory(id: string) {
   const supabase = await createClient();
   const roles = await getUserRoles();
-  if (!isAdmin(roles)) return { error: "Forbidden" };
+  if (!canManageCategories(roles)) return { error: "Forbidden" };
 
   const { error } = await supabase.from("categories").delete().eq("id", id);
   if (error) return { error: error.message };

@@ -42,3 +42,8 @@ export function canPublish(roles: RoleName[]): boolean {
 export function isAdmin(roles: RoleName[]): boolean {
   return roles.includes("admin");
 }
+
+/** Admin or moderator can manage categories. */
+export function canManageCategories(roles: RoleName[]): boolean {
+  return roles.includes("admin") || roles.includes("moderator");
+}
