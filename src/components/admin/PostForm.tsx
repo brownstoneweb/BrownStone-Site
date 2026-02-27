@@ -91,11 +91,16 @@ export function PostForm({
         setError("Featured image is required to publish. Add an image from Media or upload from your device.");
         return;
       }
+      if (newStatus === "published" && categoryIds.length === 0) {
+        setError("Select at least one category to publish.");
+        return;
+      }
       const finalSlug = slug.trim() || slugify(title) || "untitled";
+      const excerptTrimmed = excerpt.trim().slice(0, 300) || null;
       const parsed = postSchema.safeParse({
         title: title.trim(),
         slug: finalSlug,
-        excerpt: excerpt.trim() || null,
+        excerpt: excerptTrimmed,
         cover_image: cover,
         status: newStatus,
         read_time_minutes: readTimeMinutes ?? undefined,
@@ -205,6 +210,10 @@ export function PostForm({
       setError("Featured image is required to publish. Add an image from Media or upload from your device.");
       return;
     }
+    if (categoryIds.length === 0) {
+      setError("Select at least one category to publish.");
+      return;
+    }
     if (typeof window !== "undefined" && window.confirm("Publish this post? It will be visible on the blog.")) {
       save("published");
     }
@@ -264,14 +273,16 @@ export function PostForm({
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-earthy mb-1">Excerpt (optional)</label>
+        <label className="block text-sm font-medium text-earthy mb-1">Excerpt (optional, max 300 characters)</label>
         <textarea
           value={excerpt}
           onChange={(e) => setExcerpt(e.target.value)}
+          maxLength={300}
           rows={2}
           className="w-full border border-grey/20 rounded-lg px-3 py-2"
           placeholder="Short summary for listings and SEO"
         />
+        <p className="text-xs text-grey mt-1">{excerpt.length}/300 characters</p>
       </div>
       <div>
         <label className="block text-sm font-medium text-earthy mb-1">
@@ -330,7 +341,9 @@ export function PostForm({
       </div>
       {categories.length > 0 && (
         <div>
-          <label className="block text-sm font-medium text-earthy mb-1">Categories</label>
+          <label className="block text-sm font-medium text-earthy mb-1">
+            Categories <span className="text-grey font-normal">(required to publish)</span>
+          </label>
           <div className="flex flex-wrap gap-2">
             {categories.map((cat) => (
               <label key={cat.id} className="flex items-center gap-2">
@@ -348,6 +361,11 @@ export function PostForm({
               </label>
             ))}
           </div>
+          {categoryIds.length === 0 && (
+            <p className="text-xs text-amber-700 mt-2">
+              Select at least one category to publish this article.
+            </p>
+          )}
         </div>
       )}
       <div>
@@ -401,7 +419,7 @@ export function PostForm({
           <button
             type="button"
             onClick={handlePublish}
-            disabled={saving}
+            disabled={saving || categoryIds.length === 0}
             className="bg-primary text-white font-medium px-4 py-2 rounded-lg hover:opacity-90 disabled:opacity-50"
           >
             {saving ? "Saving…" : "Publish"}
