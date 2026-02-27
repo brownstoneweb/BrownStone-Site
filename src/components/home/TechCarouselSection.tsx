@@ -170,6 +170,25 @@ export function TechCarouselSection() {
           <p className="text-earthy/70 font-light">
             Solar, EV readiness, intelligent building systems, and investor-grade technology built into every development.
           </p>
+          {/* Mobile: smaller arrows under the intro */}
+          <div className="flex items-center justify-center gap-4 mt-6 md:hidden">
+            <button
+              type="button"
+              onClick={goPrev}
+              className="w-9 h-9 rounded-full bg-earthy text-white flex items-center justify-center shadow hover:bg-primary transition-colors"
+              aria-label="Previous"
+            >
+              <FaIcon name="chevronLeft" className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={goNext}
+              className="w-9 h-9 rounded-full bg-earthy text-white flex items-center justify-center shadow hover:bg-primary transition-colors"
+              aria-label="Next"
+            >
+              <FaIcon name="chevronRight" className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Carousel: 4 visible on lg, 2 on mobile */}
@@ -203,10 +222,11 @@ export function TechCarouselSection() {
               ))}
             </div>
           </div>
+          {/* Desktop: arrows on sides of carousel; hidden on mobile (arrows shown under intro) */}
           <button
             type="button"
             onClick={goNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 -translate-x-2 md:translate-x-4 w-10 h-10 rounded-full bg-earthy text-white flex items-center justify-center shadow-lg hover:bg-primary transition-colors z-10"
+            className="absolute right-0 top-1/2 -translate-y-1/2 -translate-x-2 md:translate-x-4 w-10 h-10 rounded-full bg-earthy text-white items-center justify-center shadow-lg hover:bg-primary transition-colors z-10 hidden md:flex"
             aria-label="Next"
           >
             <FaIcon name="chevronRight" className="w-5 h-5" />
@@ -214,7 +234,7 @@ export function TechCarouselSection() {
           <button
             type="button"
             onClick={goPrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 translate-x-2 md:-translate-x-4 w-10 h-10 rounded-full bg-earthy text-white flex items-center justify-center shadow-lg hover:bg-primary transition-colors z-10"
+            className="absolute left-0 top-1/2 -translate-y-1/2 translate-x-2 md:-translate-x-4 w-10 h-10 rounded-full bg-earthy text-white items-center justify-center shadow-lg hover:bg-primary transition-colors z-10 hidden md:flex"
             aria-label="Previous"
           >
             <FaIcon name="chevronLeft" className="w-5 h-5" />
