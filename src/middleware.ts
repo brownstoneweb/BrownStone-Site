@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -126,7 +126,11 @@ async function updateSessionWithValidation(
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-pathname", request.nextUrl.pathname);
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  const newRequest = new NextRequest(request.nextUrl, {
+    method: request.method,
+    headers: requestHeaders,
+  });
+  const response = NextResponse.next({ request: newRequest });
 
   if (!supabaseUrl || !supabaseAnonKey) {
     return { response, hasValidSession: false };

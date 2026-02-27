@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserRoles, isAdmin } from "@/lib/supabase/auth";
 import { logAuditFromAction } from "@/lib/audit";
 
-export async function updateEmergencyLock(formData: FormData) {
+export async function updateEmergencyLock(formData: FormData): Promise<{ ok?: boolean; error?: string }> {
   const supabase = await createClient();
   const roles = await getUserRoles();
   if (!isAdmin(roles)) return { error: "Forbidden" };
@@ -41,7 +41,6 @@ export async function updateEmergencyLock(formData: FormData) {
     },
   }).catch(() => {});
 
-  // Revalidate key entry points (layout will be dynamic anyway, but this helps)
   revalidatePath("/", "layout");
   revalidatePath("/admin/security");
   return { ok: true };

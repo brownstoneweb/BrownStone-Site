@@ -1,5 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function updateSession(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -7,7 +7,11 @@ export async function updateSession(request: NextRequest) {
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-pathname", request.nextUrl.pathname);
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  const newRequest = new NextRequest(request.nextUrl, {
+    method: request.method,
+    headers: requestHeaders,
+  });
+  const response = NextResponse.next({ request: newRequest });
 
   if (!supabaseUrl || !supabaseAnonKey) {
     return response;

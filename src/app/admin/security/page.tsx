@@ -1,13 +1,19 @@
 import { createClient } from "@/lib/supabase/server";
 import { getUserRoles, isAdmin } from "@/lib/supabase/auth";
 import { redirect } from "next/navigation";
-import { updateEmergencyLock } from "./actions";
+import { SecurityForm } from "./SecurityForm";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminSecurityPage() {
+export default async function AdminSecurityPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
   const roles = await getUserRoles();
   if (!isAdmin(roles)) redirect("/admin/dashboard");
+
+  const { error: errorParam } = await searchParams;
 
   const supabase = await createClient();
   const { data } = await supabase
@@ -27,6 +33,12 @@ export default async function AdminSecurityPage() {
         Emergency lock blocks all public pages with a full-screen notice. Admin routes remain accessible so you can disable it.
       </p>
 
+      {errorParam && (
+        <div className="mb-6 rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm">
+          {decodeURIComponent(errorParam)}
+        </div>
+      )}
+
       <div className={`rounded-2xl border p-6 bg-white ${enabled ? "border-red-200" : "border-slate-100"}`}>
         <div className="flex items-start justify-between gap-6 flex-wrap">
           <div>
@@ -45,40 +57,7 @@ export default async function AdminSecurityPage() {
           </span>
         </div>
 
-        <form action={(formData) => void updateEmergencyLock(formData)} className="mt-6 space-y-4">
-          <label className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              name="enabled"
-              defaultChecked={enabled}
-              className="rounded border-slate-300"
-            />
-            <span className="font-medium text-earthy">Enable emergency lock</span>
-          </label>
-
-          <div>
-            <label className="block text-sm font-medium text-earthy mb-1">
-              Lock screen message (optional)
-            </label>
-            <textarea
-              name="message"
-              defaultValue={message}
-              rows={4}
-              className="w-full border border-grey/20 rounded-lg px-3 py-2"
-              placeholder="Example: This site is temporarily unavailable due to an emergency security lock. Please check back soon."
-            />
-            <p className="text-xs text-grey mt-2">
-              Keep this neutral. This message is displayed to all visitors when locked.
-            </p>
-          </div>
-
-          <button
-            type="submit"
-            className="bg-primary text-white font-bold px-5 py-2.5 rounded-lg hover:opacity-90"
-          >
-            Save
-          </button>
-        </form>
+        <SecurityForm initialEnabled={enabled} initialMessage={message} />
       </div>
     </div>
   );
