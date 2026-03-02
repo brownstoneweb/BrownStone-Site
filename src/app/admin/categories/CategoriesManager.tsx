@@ -7,6 +7,7 @@ import {
   deleteCategory,
 } from "./actions";
 import { IconEdit, IconDelete } from "@/components/admin/ActionIcons";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 
 type Category = {
   id: string;
@@ -25,6 +26,8 @@ export function CategoriesManager({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -63,17 +66,21 @@ export function CategoriesManager({
     window.location.reload();
   }
 
-  async function handleDelete(id: string) {
+  async function handleConfirmDelete() {
+    if (!confirmDeleteId) return;
     setError("");
     setMessage("");
-    if (!confirm("Delete this category? Posts will be unlinked.")) return;
-    const result = await deleteCategory(id);
+    setDeleting(true);
+    const result = await deleteCategory(confirmDeleteId);
+    setDeleting(false);
     if (result.error) {
       setError(result.error);
+      setConfirmDeleteId(null);
       return;
     }
     setMessage("Category deleted.");
-    setCategories((prev) => prev.filter((c) => c.id !== id));
+    setCategories((prev) => prev.filter((c) => c.id !== confirmDeleteId));
+    setConfirmDeleteId(null);
     window.location.reload();
   }
 
@@ -189,7 +196,7 @@ export function CategoriesManager({
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleDelete(cat.id)}
+                      onClick={() => setConfirmDeleteId(cat.id)}
                       className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
                       title="Delete"
                       aria-label="Delete"
@@ -203,6 +210,16 @@ export function CategoriesManager({
           ))
         )}
       </ul>
+      <ConfirmDialog
+        open={confirmDeleteId !== null}
+        title="Delete category"
+        message="Delete this category? Posts will be unlinked."
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmDeleteId(null)}
+        loading={deleting}
+      />
     </div>
   );
 }

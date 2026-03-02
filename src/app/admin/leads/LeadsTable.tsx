@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import type { Database } from "@/lib/supabase/types";
 import { IconPerson, IconPersonAdd, IconDelete } from "@/components/admin/ActionIcons";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 
 type Lead = Database["public"]["Tables"]["leads"]["Row"];
 
@@ -73,7 +74,15 @@ export function LeadsTable({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkAdding, setBulkAdding] = useState(false);
   const [bulkDeleting, setBulkDeleting] = useState(false);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+  const [leadActivityModal, setLeadActivityModal] = useState<Lead | null>(null);
+  const [leadActivities, setLeadActivities] = useState<{ id: string; type: string; metadata: { content?: string }; created_at: string }[]>([]);
+  const [leadActivityNote, setLeadActivityNote] = useState("");
+  const [leadActivityType, setLeadActivityType] = useState<"note" | "call" | "meeting" | "email_sent">("note");
+  const [savingLeadActivity, setSavingLeadActivity] = useState(false);
+  const [loadingLeadActivities, setLoadingLeadActivities] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const activityDialogRef = useRef<HTMLDialogElement>(null);
 
   function toggleSelect(id: string) {
     setSelectedIds((prev) => {
@@ -144,9 +153,8 @@ export function LeadsTable({
     if (added > 0) router.refresh();
   }
 
-  async function bulkDelete() {
+  async function handleConfirmBulkDelete() {
     if (selectedIds.size === 0) return;
-    if (!confirm(`Delete ${selectedIds.size} lead${selectedIds.size === 1 ? "" : "s"}? This cannot be undone.`)) return;
     setBulkDeleting(true);
     try {
       const res = await fetch("/api/admin/leads/bulk-delete", {
@@ -156,6 +164,7 @@ export function LeadsTable({
       });
       const data = await res.json();
       if (res.ok) {
+        setShowBulkDeleteConfirm(false);
         setSelectedIds(new Set());
         router.refresh();
       } else {
@@ -178,33 +187,68 @@ export function LeadsTable({
     }
   }, [messageModal]);
 
-  function exportCsv() {
-    const headers = ["Email", "Phone", "Name", "Source", "Project", "Message", "Date"];
-    const rows = leads.map((lead) => [
-      escapeCsvCell(lead.email),
-      escapeCsvCell(lead.phone ? (lead.country_code ?? "") + lead.phone : null),
-      escapeCsvCell(lead.name),
-      escapeCsvCell(getSourceLabel(lead)),
-      escapeCsvCell(lead.project),
-      escapeCsvCell(lead.message),
-      escapeCsvCell(
-        lead.created_at
-          ? new Date(lead.created_at).toLocaleDateString(undefined, {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })
-          : null
-      ),
-    ]);
-    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\r\n");
-    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `leads-export-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+  useEffect(() => {
+    const dialog = activityDialogRef.current;
+    if (!dialog) return;
+    if (leadActivityModal) {
+      dialog.showModal();
+      setLoadingLeadActivities(true);
+      fetch(`/api/admin/leads/${leadActivityModal.id}/activities`)
+        .then((r) => r.ok ? r.json() : [])
+        .then(setLeadActivities)
+        .catch(() => setLeadActivities([]))
+        .finally(() => setLoadingLeadActivities(false));
+      setLeadActivityNote("");
+      setLeadActivityType("note");
+    } else {
+      dialog.close();
+    }
+  }, [leadActivityModal]);
+
+  async function handleAddLeadActivity(e: React.FormEvent) {
+    e.preventDefault();
+    if (!leadActivityModal) return;
+    if (leadActivityType === "note" && !leadActivityNote.trim()) return;
+    setSavingLeadActivity(true);
+    try {
+      const res = await fetch(`/api/admin/leads/${leadActivityModal.id}/activities`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: leadActivityType, content: leadActivityNote.trim() || undefined }),
+      });
+      if (res.ok) {
+        setLeadActivityNote("");
+        const list = await fetch(`/api/admin/leads/${leadActivityModal.id}/activities`).then((r) => r.ok ? r.json() : []);
+        setLeadActivities(list);
+        router.refresh();
+      }
+    } finally {
+      setSavingLeadActivity(false);
+    }
+  }
+
+  const [exportingCsv, setExportingCsv] = useState(false);
+  async function exportCsv() {
+    setExportingCsv(true);
+    try {
+      const params = new URLSearchParams();
+      if (currentSource) params.set("source", currentSource);
+      if (currentFrom) params.set("from", currentFrom);
+      if (currentTo) params.set("to", currentTo);
+      const res = await fetch(`/api/admin/leads/export?${params.toString()}`);
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `leads-export-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Export failed. Try again.");
+    } finally {
+      setExportingCsv(false);
+    }
   }
 
   function updateFilters(updates: { source?: string; from?: string; to?: string }) {
@@ -283,10 +327,10 @@ export function LeadsTable({
         <button
           type="button"
           onClick={exportCsv}
-          disabled={leads.length === 0}
+          disabled={exportingCsv}
           className="ml-auto px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Export CSV
+          {exportingCsv ? "Exporting…" : "Export CSV"}
         </button>
       </form>
 
@@ -307,7 +351,7 @@ export function LeadsTable({
           </button>
           <button
             type="button"
-            onClick={bulkDelete}
+            onClick={() => selectedIds.size > 0 && setShowBulkDeleteConfirm(true)}
             disabled={bulkDeleting}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 font-medium text-sm disabled:opacity-70"
             title="Delete selected"
@@ -430,34 +474,47 @@ export function LeadsTable({
                       })}
                     </td>
                     <td className="px-6 py-5 text-right align-middle">
-                      {(() => {
-                        const contactId = getContactIdForLead(lead, existingContactIdByEmail, addedContactId);
-                        return contactId ? (
-                          <Link
-                            href={`/admin/crm/contacts/${contactId}`}
-                            className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-primary hover:bg-primary/10 transition-colors"
-                            title="Already added – view contact"
-                            aria-label="Already added – view contact"
-                          >
-                            <IconPerson className="w-5 h-5 shrink-0" />
-                          </Link>
-                        ) : (
+                      <span className="inline-flex items-center gap-1">
                         <button
                           type="button"
-                          onClick={() => addLeadToContacts(lead)}
-                          disabled={addingLeadId === lead.id || !lead.email?.trim()}
-                          className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 transition-colors disabled:opacity-50"
-                          title="Add to contacts"
-                          aria-label="Add to contacts"
+                          onClick={() => setLeadActivityModal(lead)}
+                          className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 transition-colors"
+                          title="Notes & activity"
+                          aria-label="Notes & activity"
                         >
-                          {addingLeadId === lead.id ? (
-                            <span className="text-xs font-medium">…</span>
-                          ) : (
-                            <IconPersonAdd />
-                          )}
+                          <svg className="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                          </svg>
                         </button>
-                      );
-                      })()}
+                        {(() => {
+                          const contactId = getContactIdForLead(lead, existingContactIdByEmail, addedContactId);
+                          return contactId ? (
+                            <Link
+                              href={`/admin/crm/contacts/${contactId}`}
+                              className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-primary hover:bg-primary/10 transition-colors"
+                              title="Already added – view contact"
+                              aria-label="Already added – view contact"
+                            >
+                              <IconPerson className="w-5 h-5 shrink-0" />
+                            </Link>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => addLeadToContacts(lead)}
+                              disabled={addingLeadId === lead.id || !lead.email?.trim()}
+                              className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 transition-colors disabled:opacity-50"
+                              title="Add to contacts"
+                              aria-label="Add to contacts"
+                            >
+                              {addingLeadId === lead.id ? (
+                                <span className="text-xs font-medium">…</span>
+                              ) : (
+                                <IconPersonAdd />
+                              )}
+                            </button>
+                          );
+                        })()}
+                      </span>
                     </td>
                   </tr>
                 ))
@@ -513,6 +570,92 @@ export function LeadsTable({
           </div>
         )}
       </dialog>
+      {/* Notes & activity modal */}
+      <dialog
+        ref={activityDialogRef}
+        className="fixed inset-0 z-50 w-full max-w-lg mx-auto my-8 p-0 rounded-xl border border-slate-200 shadow-xl bg-white overflow-hidden max-h-[90vh] flex flex-col [&::backdrop]:bg-black/30"
+        onClick={(e) => { if (e.target === e.currentTarget) setLeadActivityModal(null); }}
+        onCancel={() => setLeadActivityModal(null)}
+        onClose={() => setLeadActivityModal(null)}
+      >
+        {leadActivityModal && (
+          <div className="p-6 overflow-y-auto flex-1">
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <h3 className="text-lg font-semibold text-slate-800">Notes & activity</h3>
+              <button
+                type="button"
+                onClick={() => setLeadActivityModal(null)}
+                className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100"
+                aria-label="Close"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <p className="text-sm text-slate-500 mb-4">
+              {leadActivityModal.name && <span className="font-medium text-slate-700">{leadActivityModal.name}</span>}
+              {leadActivityModal.name && " · "}
+              <a href={`mailto:${leadActivityModal.email}`} className="text-primary hover:underline">{leadActivityModal.email}</a>
+            </p>
+            <form onSubmit={handleAddLeadActivity} className="mb-6">
+              <div className="flex flex-wrap gap-2 mb-2">
+                <select
+                  value={leadActivityType}
+                  onChange={(e) => setLeadActivityType(e.target.value as "note" | "call" | "meeting" | "email_sent")}
+                  className="border border-slate-200 rounded-lg px-2.5 py-1.5 text-sm"
+                >
+                  <option value="note">Note</option>
+                  <option value="call">Call</option>
+                  <option value="meeting">Meeting</option>
+                  <option value="email_sent">Emailed</option>
+                </select>
+              </div>
+              <textarea
+                value={leadActivityNote}
+                onChange={(e) => setLeadActivityNote(e.target.value)}
+                placeholder={leadActivityType === "note" ? "Add a note..." : "Summary (optional)..."}
+                rows={2}
+                disabled={savingLeadActivity}
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm mb-2"
+              />
+              <button
+                type="submit"
+                disabled={savingLeadActivity || (leadActivityType === "note" && !leadActivityNote.trim())}
+                className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 disabled:opacity-50"
+              >
+                {savingLeadActivity ? "Adding…" : "Add"}
+              </button>
+            </form>
+            <h4 className="text-sm font-semibold text-slate-700 mb-2">Timeline</h4>
+            {loadingLeadActivities ? (
+              <p className="text-sm text-slate-500">Loading…</p>
+            ) : leadActivities.length === 0 ? (
+              <p className="text-sm text-slate-500">No activity yet.</p>
+            ) : (
+              <div className="space-y-2">
+                {[...leadActivities].reverse().map((a) => (
+                  <div key={a.id} className="flex gap-3 py-2 px-3 rounded-lg border border-slate-100 bg-slate-50/50 text-sm">
+                    <span className="text-slate-500 shrink-0 w-24">
+                      {new Date(a.created_at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                    <span className="font-medium text-slate-700 capitalize">{a.type.replace("_", " ")}</span>
+                    {a.metadata?.content && <span className="text-slate-600">— {a.metadata.content}</span>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </dialog>
+      <ConfirmDialog
+        open={showBulkDeleteConfirm}
+        title="Delete leads"
+        message={`Delete ${selectedIds.size} lead${selectedIds.size === 1 ? "" : "s"}? This cannot be undone.`}
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={handleConfirmBulkDelete}
+        onCancel={() => setShowBulkDeleteConfirm(false)}
+        loading={bulkDeleting}
+      />
     </div>
   );
 }

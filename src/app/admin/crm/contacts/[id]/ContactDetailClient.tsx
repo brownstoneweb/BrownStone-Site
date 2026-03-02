@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { Database } from "@/lib/supabase/types";
 import { EditButton, DeleteButton } from "@/components/admin/ActionIcons";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import type { ContactStatus } from "@/lib/supabase/types";
 
 type Contact = Database["public"]["Tables"]["contacts"]["Row"];
@@ -34,13 +35,16 @@ export function ContactDetailClient({
   const router = useRouter();
   const [status, setStatus] = useState(contact.status);
   const [note, setNote] = useState("");
+  const [activityType, setActivityType] = useState<"note" | "call" | "meeting" | "email_sent">("note");
   const [savingStatus, setSavingStatus] = useState(false);
   const [savingNote, setSavingNote] = useState(false);
+  const [quickLogging, setQuickLogging] = useState<"call" | "email_sent" | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   const [allSegments, setAllSegments] = useState<Segment[]>([]);
   const [contactSegIds, setContactSegIds] = useState<string[]>([]);
   const [savingSegs, setSavingSegs] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const loadSegments = useCallback(async () => {
     const [segsRes, memberRes] = await Promise.all([
@@ -70,12 +74,12 @@ export function ContactDetailClient({
     }
   }
 
-  async function handleDelete() {
-    if (!confirm(`Delete ${contact.email}? This will remove their activity and campaign links. This cannot be undone.`)) return;
+  async function handleConfirmDelete() {
     setDeleting(true);
     try {
       const res = await fetch(`/api/crm/contacts/${contact.id}`, { method: "DELETE" });
       if (res.ok) {
+        setShowDeleteConfirm(false);
         router.push("/admin/crm/contacts");
         router.refresh();
       } else {
@@ -108,13 +112,17 @@ export function ContactDetailClient({
 
   async function handleAddNote(e: React.FormEvent) {
     e.preventDefault();
-    if (!note.trim()) return;
+    if (activityType === "note" && !note.trim()) return;
     setSavingNote(true);
     try {
       const res = await fetch(`/api/crm/contacts/${contact.id}/notes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ note: note.trim() }),
+        body: JSON.stringify({
+          type: activityType,
+          note: activityType === "note" ? note.trim() : undefined,
+          content: activityType !== "note" ? note.trim() || undefined : undefined,
+        }),
       });
       if (res.ok) {
         setNote("");
@@ -122,6 +130,20 @@ export function ContactDetailClient({
       }
     } finally {
       setSavingNote(false);
+    }
+  }
+
+  async function handleQuickLog(kind: "call" | "email_sent") {
+    setQuickLogging(kind);
+    try {
+      const res = await fetch(`/api/crm/contacts/${contact.id}/notes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: kind }),
+      });
+      if (res.ok) router.refresh();
+    } finally {
+      setQuickLogging(null);
     }
   }
 
@@ -135,7 +157,7 @@ export function ContactDetailClient({
             aria-label="Edit contact"
           />
           <DeleteButton
-            onClick={handleDelete}
+            onClick={() => setShowDeleteConfirm(true)}
             disabled={deleting}
             loading={deleting}
             title="Delete contact"
@@ -254,21 +276,52 @@ export function ContactDetailClient({
           <h3 className="text-lg font-bold text-slate-800 mb-4">
             Conversation & activity
           </h3>
+          <div className="flex flex-wrap gap-2 mb-4">
+            <button
+              type="button"
+              onClick={() => handleQuickLog("call")}
+              disabled={savingNote || quickLogging !== null}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 disabled:opacity-50"
+            >
+              {quickLogging === "call" ? "…" : "Log call"}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickLog("email_sent")}
+              disabled={savingNote || quickLogging !== null}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 disabled:opacity-50"
+            >
+              {quickLogging === "email_sent" ? "…" : "Log emailed"}
+            </button>
+          </div>
           <form onSubmit={handleAddNote} className="mb-6">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <label className="text-xs font-medium text-slate-500">Add as:</label>
+              <select
+                value={activityType}
+                onChange={(e) => setActivityType(e.target.value as "note" | "call" | "meeting" | "email_sent")}
+                className="border border-slate-200 rounded-lg px-2.5 py-1.5 text-sm text-slate-700"
+              >
+                <option value="note">Note</option>
+                <option value="call">Call</option>
+                <option value="meeting">Meeting</option>
+                <option value="email_sent">Emailed</option>
+              </select>
+            </div>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Add a note..."
+              placeholder={activityType === "note" ? "Add a note..." : `Summary (optional) for ${activityType === "call" ? "call" : activityType === "meeting" ? "meeting" : "email"}...`}
               rows={3}
               disabled={savingNote}
               className="w-full px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 outline-none resize-none"
             />
             <button
               type="submit"
-              disabled={savingNote || !note.trim()}
+              disabled={savingNote || (activityType === "note" && !note.trim())}
               className="mt-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
             >
-              {savingNote ? "Adding..." : "Add note"}
+              {savingNote ? "Adding..." : activityType === "note" ? "Add note" : `Log ${activityType === "call" ? "call" : activityType === "meeting" ? "meeting" : "emailed"}`}
             </button>
           </form>
           <div className="space-y-4">
@@ -404,6 +457,16 @@ export function ContactDetailClient({
           )}
         </div>
       </div>
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        title="Delete contact"
+        message={`Delete ${contact.email}? This will remove their activity and campaign links. This cannot be undone.`}
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+        loading={deleting}
+      />
     </div>
   );
 }

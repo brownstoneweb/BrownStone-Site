@@ -45,6 +45,7 @@ export default async function AdminUsersPage() {
   const authEmails = new Set<string>();
   let profilesList: typeof profiles = profiles ?? [];
   let userRolesList = userRoles ?? [];
+  let lastSignInByUserId: Record<string, string | null> = {};
 
   try {
     const admin = createAdminClient();
@@ -52,6 +53,7 @@ export default async function AdminUsersPage() {
     const authUsers = authData?.users ?? [];
     authUsers.forEach((u) => {
       if (u.email) authEmails.add(u.email.toLowerCase());
+      lastSignInByUserId[u.id] = u.last_sign_in_at ?? null;
     });
 
     const inviteByEmail = new Map<string, { id: string; role_id: string }>();
@@ -200,6 +202,7 @@ export default async function AdminUsersPage() {
                 <th className="px-6 py-4">Email</th>
                 {canManageRoles && <th className="px-6 py-4">Roles</th>}
                 <th className="px-6 py-4">Posts</th>
+                <th className="px-6 py-4">Last login</th>
                 {canManageRoles && <th className="px-6 py-4 text-right">Action</th>}
               </tr>
             </thead>
@@ -240,6 +243,11 @@ export default async function AdminUsersPage() {
                     </td>
                   )}
                   <td className="px-6 py-5 text-sm text-slate-600">{postsByAuthor[profile.id] ?? 0}</td>
+                  <td className="px-6 py-5 text-sm text-slate-500">
+                    {lastSignInByUserId[profile.id]
+                      ? new Date(lastSignInByUserId[profile.id]!).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })
+                      : "—"}
+                  </td>
                   {canManageRoles && (
                     <td className="px-6 py-5 text-right">
                       {profile.id !== me.id && (

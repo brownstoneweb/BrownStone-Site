@@ -19,6 +19,7 @@ const navSections = [
     items: [
       { href: "/admin/posts", label: "Posts", icon: "article" as const },
       { href: "/admin/categories", label: "Categories", icon: "folder" as const },
+      { href: "/admin/snippets", label: "Snippets", icon: "snippet" as const },
       { href: "/admin/media", label: "Media", icon: "image" as const },
       { href: "/admin/now-selling", label: "Signature Listings", icon: "home" as const },
     ],
@@ -47,7 +48,7 @@ const navSections = [
   },
 ] as const;
 
-type NavIconName = "dashboard" | "article" | "folder" | "image" | "home" | "mail" | "people" | "pipeline" | "campaigns" | "templates" | "analytics" | "badge" | "person" | "audit" | "lock" | "book";
+type NavIconName = "dashboard" | "article" | "folder" | "image" | "home" | "mail" | "people" | "pipeline" | "campaigns" | "templates" | "analytics" | "badge" | "person" | "audit" | "lock" | "book" | "snippet";
 
 function NavIcon({ name }: { name: NavIconName }) {
   const c = "w-5 h-5 shrink-0";
@@ -67,6 +68,10 @@ function NavIcon({ name }: { name: NavIconName }) {
     case "image":
       return (
         <svg className={c} fill="currentColor" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+      );
+    case "snippet":
+      return (
+        <svg className={c} fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
       );
     case "badge":
       return (

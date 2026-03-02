@@ -149,12 +149,27 @@ async function updateSessionWithValidation(
     },
   });
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+  let user: unknown = null;
+  let hasError = false;
+  try {
+    const result = await supabase.auth.getUser();
+    user = result.data?.user;
+    hasError = !!result.error;
+    if (result.error) {
+      const code = (result.error as { code?: string }).code;
+      if (code === "refresh_token_not_found" || code === "invalid_refresh_token") {
+        await supabase.auth.signOut();
+      }
+    }
+  } catch (err: unknown) {
+    const code = err && typeof err === "object" && "code" in err ? (err as { code?: string }).code : undefined;
+    if (code === "refresh_token_not_found" || code === "invalid_refresh_token") {
+      await supabase.auth.signOut();
+    }
+    hasError = true;
+  }
 
-  return { response, hasValidSession: !error && !!user };
+  return { response, hasValidSession: !hasError && !!user };
 }
 
 async function continueWithSession(request: NextRequest): Promise<NextResponse> {

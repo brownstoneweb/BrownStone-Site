@@ -2,12 +2,15 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 
 type MediaItem = {
   key: string;
   url: string;
   size: number;
   lastModified: string;
+  alt?: string | null;
+  caption?: string | null;
 };
 
 function formatSize(bytes: number): string {
@@ -27,6 +30,10 @@ export function MediaLibrary({ canDelete = false }: { canDelete?: boolean }) {
   const [uploadError, setUploadError] = useState("");
   const [deleting, setDeleting] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [editingKey, setEditingKey] = useState<string | null>(null);
+  const [editAlt, setEditAlt] = useState("");
+  const [editCaption, setEditCaption] = useState("");
+  const [savingMeta, setSavingMeta] = useState(false);
 
   const refetch = useCallback(async () => {
     const res = await fetch("/api/admin/media");
@@ -98,6 +105,41 @@ export function MediaLibrary({ canDelete = false }: { canDelete?: boolean }) {
     setCopied(key);
     setTimeout(() => setCopied(null), 2000);
   };
+
+  const startEdit = (item: MediaItem) => {
+    setEditingKey(item.key);
+    setEditAlt(item.alt ?? "");
+    setEditCaption(item.caption ?? "");
+  };
+
+  const saveMeta = useCallback(async () => {
+    if (!editingKey) return;
+    setSavingMeta(true);
+    try {
+      const res = await fetch("/api/admin/media", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: editingKey,
+          alt: editAlt.trim() || null,
+          caption: editCaption.trim() || null,
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setItems((prev) =>
+        prev.map((i) =>
+          i.key === editingKey
+            ? { ...i, alt: editAlt.trim() || null, caption: editCaption.trim() || null }
+            : i
+        )
+      );
+      setEditingKey(null);
+    } catch {
+      setUploadError("Failed to save alt/caption");
+    } finally {
+      setSavingMeta(false);
+    }
+  }, [editingKey, editAlt, editCaption]);
 
   const handleDelete = useCallback(
     async (key: string) => {
@@ -175,36 +217,16 @@ export function MediaLibrary({ canDelete = false }: { canDelete?: boolean }) {
           >
             {canDelete && (
               <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                {confirmDelete === item.key ? (
-                  <div className="flex gap-1">
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(item.key)}
-                      disabled={deleting === item.key}
-                      className="bg-red-600 text-white text-xs px-2 py-1 rounded shadow hover:bg-red-700 disabled:opacity-50"
-                    >
-                      {deleting === item.key ? "…" : "Yes"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setConfirmDelete(null)}
-                      className="bg-white text-grey text-xs px-2 py-1 rounded shadow hover:bg-grey/10"
-                    >
-                      No
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setConfirmDelete(item.key)}
-                    className="bg-white/90 backdrop-blur text-red-500 hover:text-red-700 hover:bg-white p-1.5 rounded-lg shadow transition-colors"
-                    title="Delete"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(item.key)}
+                  className="bg-white/90 backdrop-blur text-red-500 hover:text-red-700 hover:bg-white p-1.5 rounded-lg shadow transition-colors"
+                  title="Delete"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
               </div>
             )}
             <div className="aspect-square bg-neutral-100 flex items-center justify-center overflow-hidden">
@@ -221,21 +243,88 @@ export function MediaLibrary({ canDelete = false }: { canDelete?: boolean }) {
             <div className="p-2 text-xs text-grey truncate" title={item.key}>
               {item.key.split("/").pop() ?? item.key}
             </div>
-            <div className="px-2 pb-2 flex items-center justify-between gap-2">
+            {(item.alt || item.caption) && (
+              <div className="px-2 text-xs text-slate-600 space-y-0.5">
+                {item.alt && <p className="truncate" title={item.alt}>Alt: {item.alt}</p>}
+                {item.caption && <p className="truncate" title={item.caption}>Caption: {item.caption}</p>}
+              </div>
+            )}
+            <div className="px-2 pb-2 flex items-center justify-between gap-2 flex-wrap">
               <span className="text-xs text-grey">{formatSize(item.size)}</span>
-              <button
-                type="button"
-                onClick={() => copyUrl(item.url, item.key)}
-                className="text-xs font-medium text-primary hover:underline"
-              >
-                {copied === item.key ? "Copied!" : "Copy URL"}
-              </button>
+              <span className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={() => startEdit(item)}
+                  className="text-xs font-medium text-primary hover:underline"
+                >
+                  Alt/Caption
+                </button>
+                <button
+                  type="button"
+                  onClick={() => copyUrl(item.url, item.key)}
+                  className="text-xs font-medium text-primary hover:underline"
+                >
+                  {copied === item.key ? "Copied!" : "Copy URL"}
+                </button>
+              </span>
             </div>
           </div>
         );
       })}
         </div>
       )}
+      {/* Edit alt/caption modal */}
+      {editingKey && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50" role="dialog" aria-modal="true">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 border border-slate-200">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Edit alt text & caption</h3>
+            <p className="text-xs text-slate-500 mb-2 truncate">{editingKey.split("/").pop()}</p>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Alt text</label>
+            <input
+              type="text"
+              value={editAlt}
+              onChange={(e) => setEditAlt(e.target.value)}
+              placeholder="Describe the image for accessibility"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm mb-4"
+            />
+            <label className="block text-sm font-medium text-slate-700 mb-1">Caption</label>
+            <input
+              type="text"
+              value={editCaption}
+              onChange={(e) => setEditCaption(e.target.value)}
+              placeholder="Optional caption"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm mb-6"
+            />
+            <div className="flex gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => setEditingKey(null)}
+                className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveMeta}
+                disabled={savingMeta}
+                className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 disabled:opacity-50"
+              >
+                {savingMeta ? "Saving…" : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <ConfirmDialog
+        open={confirmDelete !== null}
+        title="Delete media file"
+        message={confirmDelete ? `Delete "${confirmDelete.split("/").pop() ?? confirmDelete}"? This cannot be undone.` : ""}
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={() => confirmDelete && handleDelete(confirmDelete)}
+        onCancel={() => setConfirmDelete(null)}
+        loading={deleting === confirmDelete}
+      />
     </div>
   );
 }

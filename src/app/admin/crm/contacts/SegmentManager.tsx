@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 
 export type Segment = {
   id: string;
@@ -55,6 +56,8 @@ export function SegmentManager({
   const [editName, setEditName] = useState("");
   const [editColor, setEditColor] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   async function handleCreate() {
     if (!newName.trim()) return;
@@ -101,13 +104,19 @@ export function SegmentManager({
     }
   }
 
-  async function handleDelete(id: string, name: string) {
-    if (!confirm(`Delete segment "${name}"? Contacts in this segment won't be deleted, just unlinked.`)) return;
+  async function handleConfirmDelete() {
+    if (!confirmDelete) return;
+    setDeleting(true);
     try {
-      const res = await fetch(`/api/crm/segments/${id}`, { method: "DELETE" });
-      if (res.ok) onRefresh();
+      const res = await fetch(`/api/crm/segments/${confirmDelete.id}`, { method: "DELETE" });
+      if (res.ok) {
+        setConfirmDelete(null);
+        onRefresh();
+      }
     } catch {
       // ignore
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -243,7 +252,7 @@ export function SegmentManager({
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleDelete(seg.id, seg.name)}
+                      onClick={() => setConfirmDelete({ id: seg.id, name: seg.name })}
                       className="text-xs text-slate-400 hover:text-red-600"
                     >
                       Delete
@@ -258,6 +267,16 @@ export function SegmentManager({
           </div>
         </div>
       )}
+      <ConfirmDialog
+        open={confirmDelete !== null}
+        title="Delete segment"
+        message={confirmDelete ? `Delete segment "${confirmDelete.name}"? Contacts in this segment won't be deleted, just unlinked.` : ""}
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmDelete(null)}
+        loading={deleting}
+      />
     </div>
   );
 }

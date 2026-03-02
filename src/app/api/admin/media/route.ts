@@ -6,6 +6,9 @@ import { logAuditFromRequest } from "@/lib/audit";
 
 const log = logger.create("api:admin:media");
 
+/** Cap listed objects to avoid huge responses and Array buffer allocation failures. */
+const MAX_MEDIA_ITEMS = 2000;
+
 const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID;
 const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID;
 const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY;
@@ -53,16 +56,17 @@ export async function GET() {
 
   try {
     do {
+      if (items.length >= MAX_MEDIA_ITEMS) break;
       const command = new ListObjectsV2Command({
         Bucket: R2_BUCKET_NAME,
         Prefix: "media/",
-        MaxKeys: 500,
+        MaxKeys: Math.min(500, MAX_MEDIA_ITEMS - items.length),
         ContinuationToken: continuationToken,
       });
       const response = await client.send(command);
 
       for (const obj of response.Contents ?? []) {
-        if (obj.Key) {
+        if (obj.Key && items.length < MAX_MEDIA_ITEMS) {
           items.push({
             key: obj.Key,
             url: `${R2_PUBLIC_URL}/${obj.Key}`,
@@ -89,7 +93,34 @@ export async function GET() {
   // Newest first
   items.sort((a, b) => (b.lastModified > a.lastModified ? 1 : -1));
 
-  return NextResponse.json({ items });
+  const keys = items.map((i) => i.key);
+  let metaMap: Record<string, { alt: string | null; caption: string | null }> = {};
+  if (keys.length > 0) {
+    const { data: metaRows } = await supabase
+      .from("media_meta")
+      .select("key, alt, caption")
+      .in("key", keys);
+    if (metaRows) {
+      metaMap = Object.fromEntries(
+        metaRows.map((r) => [
+          r.key,
+          { alt: (r.alt as string) ?? null, caption: (r.caption as string) ?? null },
+        ])
+      );
+    }
+  }
+
+  const itemsWithMeta = items.map((item) => ({
+    ...item,
+    alt: metaMap[item.key]?.alt ?? null,
+    caption: metaMap[item.key]?.caption ?? null,
+  }));
+
+  const truncated = items.length >= MAX_MEDIA_ITEMS;
+  return NextResponse.json({
+    items: itemsWithMeta,
+    ...(truncated && { truncated: true, message: `Showing newest ${MAX_MEDIA_ITEMS} files. More may exist in the bucket.` }),
+  });
 }
 
 export async function DELETE(request: Request) {
@@ -147,4 +178,50 @@ export async function DELETE(request: Request) {
     log.error("Media deletion failed", err);
     return NextResponse.json({ error: "Failed to delete file" }, { status: 500 });
   }
+}
+
+export async function PATCH(request: Request) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { getUserRoles } = await import("@/lib/supabase/auth");
+  const roles = await getUserRoles();
+  if (!roles.includes("admin") && !roles.includes("moderator") && !roles.includes("author")) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  let body: { key?: string; alt?: string | null; caption?: string | null };
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const key = body.key?.trim();
+  if (!key || !key.startsWith("media/")) {
+    return NextResponse.json({ error: "Invalid key" }, { status: 400 });
+  }
+
+  const alt = body.alt === undefined ? null : (body.alt === null || body.alt === "" ? null : String(body.alt).trim());
+  const caption = body.caption === undefined ? null : (body.caption === null || body.caption === "" ? null : String(body.caption).trim());
+
+  const { error } = await supabase.from("media_meta").upsert(
+    {
+      key,
+      alt,
+      caption,
+      updated_at: new Date().toISOString(),
+      updated_by: user.id,
+    },
+    { onConflict: "key" }
+  );
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ success: true });
 }

@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { Database } from "@/lib/supabase/types";
 import { CONTACT_STATUS_LABELS } from "@/lib/crm/types";
 import { ViewButton, EditButton, DeleteButton } from "@/components/admin/ActionIcons";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import type { Segment } from "./SegmentManager";
 
 type Contact = Database["public"]["Tables"]["contacts"]["Row"];
@@ -31,12 +32,14 @@ export function ContactsTable({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteContact, setConfirmDeleteContact] = useState<Contact | null>(null);
   const [segMembership, setSegMembership] = useState<SegmentMembership>({});
   const [segFilter, setSegFilter] = useState("");
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkSegId, setBulkSegId] = useState("");
   const [bulkApplying, setBulkApplying] = useState(false);
+  const [exportingCsv, setExportingCsv] = useState(false);
 
   useEffect(() => {
     if (contacts.length === 0) return;
@@ -63,12 +66,13 @@ export function ContactsTable({
     setSelected(new Set());
   }, [contacts, segFilter]);
 
-  async function handleDeleteContact(contact: Contact) {
-    if (!confirm(`Delete ${contact.email}? This will remove their activity and campaign links. This cannot be undone.`)) return;
-    setDeletingId(contact.id);
+  async function handleConfirmDeleteContact() {
+    if (!confirmDeleteContact) return;
+    setDeletingId(confirmDeleteContact.id);
     try {
-      const res = await fetch(`/api/crm/contacts/${contact.id}`, { method: "DELETE" });
+      const res = await fetch(`/api/crm/contacts/${confirmDeleteContact.id}`, { method: "DELETE" });
       if (res.ok) {
+        setConfirmDeleteContact(null);
         router.refresh();
       } else {
         const data = await res.json();
@@ -78,6 +82,29 @@ export function ContactsTable({
       alert("Failed to delete contact");
     } finally {
       setDeletingId(null);
+    }
+  }
+
+  async function exportCsv() {
+    setExportingCsv(true);
+    try {
+      const params = new URLSearchParams();
+      if (currentStatus) params.set("status", currentStatus);
+      if (currentSearch) params.set("search", currentSearch);
+      if (currentTags) params.set("tags", currentTags);
+      const res = await fetch(`/api/admin/crm/contacts/export?${params.toString()}`);
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `contacts-export-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Export failed. Try again.");
+    } finally {
+      setExportingCsv(false);
     }
   }
 
@@ -260,6 +287,14 @@ export function ContactsTable({
             Clear filters
           </button>
         )}
+        <button
+          type="button"
+          onClick={exportCsv}
+          disabled={exportingCsv}
+          className="ml-auto px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors disabled:opacity-50"
+        >
+          {exportingCsv ? "Exporting…" : "Export CSV"}
+        </button>
       </form>
 
       {/* Bulk action bar */}
@@ -403,7 +438,7 @@ export function ContactsTable({
                           <ViewButton href={`/admin/crm/contacts/${contact.id}`} title="View contact" />
                           <EditButton href={`/admin/crm/contacts/${contact.id}/edit`} title="Edit contact" />
                           <DeleteButton
-                            onClick={() => handleDeleteContact(contact)}
+                            onClick={() => setConfirmDeleteContact(contact)}
                             disabled={deletingId === contact.id}
                             loading={deletingId === contact.id}
                             title="Delete contact"
@@ -426,6 +461,16 @@ export function ContactsTable({
           {segFilter ? ` in segment "${segMap[segFilter]?.name ?? ""}"` : ""}.
         </p>
       )}
+      <ConfirmDialog
+        open={confirmDeleteContact !== null}
+        title="Delete contact"
+        message={confirmDeleteContact ? `Delete ${confirmDeleteContact.email}? This will remove their activity and campaign links. This cannot be undone.` : ""}
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={handleConfirmDeleteContact}
+        onCancel={() => setConfirmDeleteContact(null)}
+        loading={deletingId !== null}
+      />
     </div>
   );
 }

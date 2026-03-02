@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DeleteButton } from "@/components/admin/ActionIcons";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 
 export function DeleteCampaignButton({
   campaignId,
@@ -15,13 +16,14 @@ export function DeleteCampaignButton({
 }) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
-  async function handleDelete() {
-    if (!confirm(`Delete campaign "${campaignName}"? This will remove all recipient records and cannot be undone.`)) return;
+  async function handleConfirm() {
     setDeleting(true);
     try {
       const res = await fetch(`/api/crm/campaigns/${campaignId}`, { method: "DELETE" });
       if (res.ok) {
+        setShowConfirm(false);
         router.push("/admin/crm/campaigns");
         router.refresh();
       } else {
@@ -36,13 +38,25 @@ export function DeleteCampaignButton({
   }
 
   return (
-    <DeleteButton
-      onClick={handleDelete}
-      disabled={deleting}
-      loading={deleting}
-      title={variant === "button" ? "Delete campaign" : "Delete"}
-      aria-label={variant === "button" ? "Delete campaign" : "Delete"}
-      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-    />
+    <>
+      <DeleteButton
+        onClick={() => setShowConfirm(true)}
+        disabled={deleting}
+        loading={deleting}
+        title={variant === "button" ? "Delete campaign" : "Delete"}
+        aria-label={variant === "button" ? "Delete campaign" : "Delete"}
+        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+      />
+      <ConfirmDialog
+        open={showConfirm}
+        title="Delete campaign"
+        message={`Delete campaign "${campaignName}"? This will remove all recipient records and cannot be undone.`}
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={handleConfirm}
+        onCancel={() => setShowConfirm(false)}
+        loading={deleting}
+      />
+    </>
   );
 }

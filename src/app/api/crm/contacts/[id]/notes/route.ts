@@ -8,9 +8,20 @@ import { logAuditFromRequest } from "@/lib/audit";
 
 const log = logger.create("api:crm:contact:notes");
 
+const activityTypes = ["note", "call", "meeting", "email_sent"] as const;
 const addNoteSchema = z.object({
-  note: z.string().min(1).max(10000),
-});
+  note: z.string().max(10000).optional(),
+  type: z.enum(activityTypes).optional(),
+  content: z.string().max(5000).optional(),
+}).refine(
+  (data) => {
+    const type = data.type ?? "note";
+    const text = (data.note ?? data.content ?? "").trim();
+    if (type === "note") return text.length > 0;
+    return true;
+  },
+  { message: "Note content is required when adding a note" }
+);
 
 export async function POST(
   request: Request,
@@ -46,7 +57,18 @@ export async function POST(
   const parsed = addNoteSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Note is required", details: parsed.error.flatten() },
+      { error: "Note or activity is required", details: parsed.error.flatten() },
+      { status: 400 }
+    );
+  }
+
+  const data = parsed.data;
+  const type = data.type ?? "note";
+  const content = (data.note ?? data.content ?? "").trim();
+
+  if (type === "note" && !content) {
+    return NextResponse.json(
+      { error: "Note content is required" },
       { status: 400 }
     );
   }
@@ -54,8 +76,8 @@ export async function POST(
   try {
     await addContactActivity(supabase, {
       contact_id: id,
-      type: "note",
-      metadata: { content: parsed.data.note },
+      type,
+      metadata: content ? { content } : {},
       created_by_id: user.id,
     });
     logAuditFromRequest(request, {
@@ -64,13 +86,13 @@ export async function POST(
       action: "create",
       resourceType: "note",
       resourceId: id,
-      description: `Added note to contact ${id}`,
+      description: `Added ${type} to contact ${id}`,
     }).catch(() => {});
     return NextResponse.json({ success: true });
   } catch (err) {
-    log.error("Note creation failed", err);
+    log.error("Note/activity creation failed", err);
     return NextResponse.json(
-      { error: "Failed to add note" },
+      { error: "Failed to add note or activity" },
       { status: 500 }
     );
   }

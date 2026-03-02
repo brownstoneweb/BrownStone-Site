@@ -76,6 +76,32 @@ export default async function AdminDashboardPage() {
         <p className="text-slate-500 mt-1">Welcome back. Here&apos;s what&apos;s happening at Brownstone today.</p>
       </div>
 
+      {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
+        <div className="mb-10">
+          <h3 className="text-lg font-bold text-slate-800 mb-3">Analytics</h3>
+          <a
+            href="https://analytics.google.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-primary/30 transition-all group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                </div>
+                <div>
+                  <p className="text-slate-500 text-sm font-medium">Traffic (GA4)</p>
+                  <p className="text-slate-800 font-bold mt-0.5">Last 30 days & top pages</p>
+                  <p className="text-xs text-slate-400 mt-1">View in Google Analytics →</p>
+                </div>
+              </div>
+              <svg className="w-5 h-5 text-slate-400 group-hover:text-primary transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+            </div>
+          </a>
+        </div>
+      )}
+
       <h3 className="text-lg font-bold text-slate-800 mb-3">Content</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-primary/30 transition-all">

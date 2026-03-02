@@ -23,6 +23,8 @@ export function TiptapEditor({
   const didSyncInitial = useRef(false);
   const [showMediaPicker, setShowMediaPicker] = useState(false);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [showSnippetPicker, setShowSnippetPicker] = useState(false);
+  const [snippets, setSnippets] = useState<{ id: string; name: string; content: string }[]>([]);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -97,6 +99,31 @@ export function TiptapEditor({
         editor.chain().focus().setImage({ src: url, alt: alt || undefined }).run();
       }
       setShowMediaPicker(false);
+    },
+    [editor]
+  );
+
+  const openSnippetPicker = useCallback(async () => {
+    setShowSnippetPicker(true);
+    try {
+      const res = await fetch("/api/admin/snippets");
+      if (res.ok) {
+        const data = await res.json();
+        setSnippets(data ?? []);
+      } else {
+        setSnippets([]);
+      }
+    } catch {
+      setSnippets([]);
+    }
+  }, []);
+
+  const insertSnippet = useCallback(
+    (content: string) => {
+      if (editor && content) {
+        editor.chain().focus().insertContent(content).run();
+      }
+      setShowSnippetPicker(false);
     },
     [editor]
   );
@@ -217,6 +244,14 @@ export function TiptapEditor({
             >
               Media
             </button>
+            <button
+              type="button"
+              onClick={openSnippetPicker}
+              className="p-2 rounded hover:bg-slate-200 text-sm"
+              title="Insert snippet"
+            >
+              Snippet
+            </button>
             <span className="w-px h-6 bg-slate-300 mx-1" />
             <button
               type="button"
@@ -231,6 +266,41 @@ export function TiptapEditor({
       </div>
       <EditorContent editor={editor} />
 
+      {showSnippetPicker && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+          onClick={() => setShowSnippetPicker(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[70vh] overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-slate-100 flex justify-between items-center">
+              <h3 className="font-bold text-slate-800">Insert snippet</h3>
+              <button type="button" onClick={() => setShowSnippetPicker(false)} className="text-slate-500 hover:text-slate-800">✕</button>
+            </div>
+            <div className="p-4 overflow-y-auto">
+              {snippets.length === 0 ? (
+                <p className="text-sm text-slate-500">No snippets. Add them in Admin → Snippets.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {snippets.map((s) => (
+                    <li key={s.id}>
+                      <button
+                        type="button"
+                        onClick={() => insertSnippet(s.content)}
+                        className="w-full text-left px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm font-medium text-slate-800"
+                      >
+                        {s.name}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       {showMediaPicker && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"

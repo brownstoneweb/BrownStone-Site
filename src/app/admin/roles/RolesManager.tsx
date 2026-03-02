@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createRole, updateRole, deleteRole } from "./actions";
 import { IconEdit, IconDelete } from "@/components/admin/ActionIcons";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 
 const BUILT_IN = ["admin", "moderator", "author"];
 
@@ -13,6 +14,8 @@ export function RolesManager({ roles: initialRoles }: { roles: Role[] }) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -35,12 +38,17 @@ export function RolesManager({ roles: initialRoles }: { roles: Role[] }) {
     }
   }
 
-  async function handleDelete(id: string, name: string) {
-    if (!confirm(`Delete role "${name}"? Users with this role will lose it.`)) return;
+  async function handleConfirmDelete() {
+    if (!confirmDelete) return;
     setError("");
-    const result = await deleteRole(id);
+    setDeleting(true);
+    const result = await deleteRole(confirmDelete.id);
+    setDeleting(false);
     if (result.error) setError(result.error);
-    else router.refresh();
+    else {
+      setConfirmDelete(null);
+      router.refresh();
+    }
   }
 
   return (
@@ -122,7 +130,7 @@ export function RolesManager({ roles: initialRoles }: { roles: Role[] }) {
                   {!BUILT_IN.includes(role.name) && (
                     <button
                       type="button"
-                      onClick={() => handleDelete(role.id, role.name)}
+                      onClick={() => setConfirmDelete({ id: role.id, name: role.name })}
                       className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
                       title="Delete"
                       aria-label="Delete"
@@ -136,6 +144,16 @@ export function RolesManager({ roles: initialRoles }: { roles: Role[] }) {
           </li>
         ))}
       </ul>
+      <ConfirmDialog
+        open={confirmDelete !== null}
+        title="Delete role"
+        message={confirmDelete ? `Delete role "${confirmDelete.name}"? Users with this role will lose it.` : ""}
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmDelete(null)}
+        loading={deleting}
+      />
     </div>
   );
 }
