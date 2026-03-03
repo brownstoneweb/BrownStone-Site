@@ -68,10 +68,10 @@ export async function POST(
     );
   }
 
-  // Cap batch at remaining hourly quota so one click never exceeds the limit (e.g. 3 sent this hour → send up to 7 more)
+  // Cap batch at remaining hourly quota so one click never exceeds the limit (e.g. 3 sent this hour → send up to 17 more)
   const remainingThisHour = MAX_EMAILS_PER_HOUR - sentThisHour;
   const remainingToday = MAX_EMAILS_PER_DAY - sentToday;
-  const batchLimit = Math.min(10, remainingThisHour, remainingToday);
+  const batchLimit = Math.min(20, remainingThisHour, remainingToday);
   const pending = await getCampaignEmailsForSending(
     supabase,
     id,

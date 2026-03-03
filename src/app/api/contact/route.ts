@@ -5,6 +5,7 @@ import { getPostmarkFrom } from "@/lib/emails/postmark-from";
 import { notifyLeadModerator } from "@/lib/emails/lead-notify";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
+import { verifyRecaptchaV3, isHoneypotFilled } from "@/lib/recaptcha";
 
 const log = logger.create("api:contact");
 
@@ -25,11 +26,31 @@ export async function POST(request: Request) {
 
   const client = new ServerClient(process.env.POSTMARK_API_KEY);
 
-  let body: { name?: string; email?: string; projectType?: string; message?: string };
+  let body: {
+    name?: string;
+    email?: string;
+    projectType?: string;
+    message?: string;
+    recaptchaToken?: string;
+    [key: string]: unknown;
+  };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
+  }
+
+  if (isHoneypotFilled(body)) {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
+
+  if (process.env.RECAPTCHA_SECRET_KEY) {
+    const token = body.recaptchaToken;
+    const result = await verifyRecaptchaV3(token ?? "", "contact", 0.5);
+    if (!result.success) {
+      log.warn("Contact form reCAPTCHA failed", result.error);
+      return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
+    }
   }
 
   const { name, email, projectType, message } = body;

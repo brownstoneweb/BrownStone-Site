@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
+import { HONEYPOT_FIELD } from "@/lib/recaptcha";
 
 type Variant = "sidebar" | "cta";
 
@@ -8,17 +10,25 @@ export function NewsletterForm({ variant = "sidebar" }: { variant?: Variant }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const { getToken } = useRecaptcha();
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!email.trim()) return;
     setStatus("loading");
     setMessage("");
     try {
+      const form = e.currentTarget;
+      const recaptchaToken = await getToken("newsletter");
+      const honeypot = (new FormData(form).get(HONEYPOT_FIELD) as string) ?? "";
       const res = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({
+          email: email.trim(),
+          recaptchaToken: recaptchaToken ?? undefined,
+          [HONEYPOT_FIELD]: honeypot,
+        }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -43,6 +53,7 @@ export function NewsletterForm({ variant = "sidebar" }: { variant?: Variant }) {
         onSubmit={handleSubmit}
         className={isSidebar ? "space-y-3" : "flex flex-col md:flex-row gap-4"}
       >
+      <input type="text" name={HONEYPOT_FIELD} tabIndex={-1} autoComplete="off" className="absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden" aria-hidden />
       <input
         type="email"
         placeholder="Your email"

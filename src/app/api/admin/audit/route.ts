@@ -8,6 +8,7 @@ const auditSchema = z.object({
   action: z.enum([
     "create", "update", "delete", "upload", "view",
     "sign_in", "sign_out", "login_failure", "password_reset", "page_view",
+    "lock_user", "unlock_user",
   ]),
   resource_type: z.enum([
     "contact", "lead", "post", "category", "campaign", "template",

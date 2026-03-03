@@ -35,12 +35,15 @@ const ACTION_COLORS: Record<string, string> = {
   password_reset: "bg-violet-100 text-violet-700",
   page_view: "bg-sky-100 text-sky-700",
   view: "bg-slate-100 text-slate-600",
+  lock_user: "bg-amber-100 text-amber-700",
+  unlock_user: "bg-teal-100 text-teal-700",
 };
 
 const ALL_ACTIONS = [
   "create", "update", "delete", "bulk_delete", "import",
   "send", "assign_role", "remove_role", "invite", "upload",
   "sign_in", "sign_out", "login_failure", "password_reset", "page_view", "view",
+  "lock_user", "unlock_user",
 ];
 
 const ALL_RESOURCE_TYPES = [

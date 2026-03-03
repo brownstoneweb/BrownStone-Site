@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
+import { HONEYPOT_FIELD } from "@/lib/recaptcha";
 
 export type BrochureProject = "celestia" | "townhouse" | "lakehouse";
 
@@ -24,6 +26,7 @@ export default function BrochureForm({
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const { getToken } = useRecaptcha();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -46,6 +49,9 @@ export default function BrochureForm({
     setMessage("");
 
     try {
+      const recaptchaToken = await getToken("brochure");
+      const form = e.currentTarget;
+      const honeypot = (new FormData(form).get(HONEYPOT_FIELD) as string) ?? "";
       const res = await fetch("/api/brochure", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -53,6 +59,8 @@ export default function BrochureForm({
           email: email.trim(),
           project,
           consent: true,
+          recaptchaToken: recaptchaToken ?? undefined,
+          [HONEYPOT_FIELD]: honeypot,
         }),
       });
 
@@ -108,6 +116,7 @@ export default function BrochureForm({
 
   return (
     <form onSubmit={handleSubmit} className={`${formClass} ${className}`}>
+      <input type="text" name={HONEYPOT_FIELD} tabIndex={-1} autoComplete="off" className="absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden" aria-hidden />
       <div className={variant === "compact" ? "w-full sm:w-auto sm:flex-1 sm:min-w-[220px]" : ""}>
         <input
           type="email"

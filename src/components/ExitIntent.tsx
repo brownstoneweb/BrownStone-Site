@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
+import { HONEYPOT_FIELD } from "@/lib/recaptcha";
 
 const STORAGE_KEY = "brownstone_exit_intent_shown";
 
@@ -14,6 +16,7 @@ export default function ExitIntent() {
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const { getToken } = useRecaptcha();
 
   const isAdmin = pathname?.startsWith("/admin") ?? false;
 
@@ -68,10 +71,19 @@ export default function ExitIntent() {
     setStatus("loading");
     setMessage("");
     try {
+      const recaptchaToken = await getToken("exit_intent");
+      const form = e.currentTarget;
+      const honeypot = (new FormData(form).get(HONEYPOT_FIELD) as string) ?? "";
       const res = await fetch("/api/lakehouse-leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), consent, source: "exit_intent" }),
+        body: JSON.stringify({
+          email: email.trim(),
+          consent,
+          source: "exit_intent",
+          recaptchaToken: recaptchaToken ?? undefined,
+          [HONEYPOT_FIELD]: honeypot,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -143,6 +155,7 @@ export default function ExitIntent() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
+              <input type="text" name={HONEYPOT_FIELD} tabIndex={-1} autoComplete="off" className="absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden" aria-hidden />
               <input
                 type="email"
                 value={email}

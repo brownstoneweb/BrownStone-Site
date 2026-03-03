@@ -48,7 +48,7 @@ export function SegmentManager({
   segments: Segment[];
   onRefresh: () => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [newName, setNewName] = useState("");
   const [newColor, setNewColor] = useState("#6B7280");
   const [creating, setCreating] = useState(false);

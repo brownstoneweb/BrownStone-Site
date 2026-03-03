@@ -4,10 +4,13 @@ import { useState } from "react";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { FaIcon } from "@/components/Icons";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
+import { HONEYPOT_FIELD } from "@/lib/recaptcha";
 
 export default function Contact() {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const { getToken } = useRecaptcha();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -25,10 +28,19 @@ export default function Contact() {
     setStatus("sending");
     setErrorMessage("");
     try {
+      const recaptchaToken = await getToken("contact");
+      const honeypot = (data.get(HONEYPOT_FIELD) as string) ?? "";
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, projectType, message }),
+        body: JSON.stringify({
+          name,
+          email,
+          projectType,
+          message,
+          recaptchaToken: recaptchaToken ?? undefined,
+          [HONEYPOT_FIELD]: honeypot,
+        }),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -135,6 +147,11 @@ export default function Contact() {
                       <option value="Consulting Services">Consulting Services</option>
                     </select>
                   </label>
+                  {/* Honeypot: hidden from users, leave empty */}
+                  <div className="absolute -left-[9999px] top-0 opacity-0" aria-hidden>
+                    <label htmlFor="contact-website">Website</label>
+                    <input id="contact-website" type="text" name={HONEYPOT_FIELD} tabIndex={-1} autoComplete="off" />
+                  </div>
                   <label className="flex flex-col gap-2">
                     <span className="text-brown-deep text-sm font-bold uppercase tracking-wider">
                       Message

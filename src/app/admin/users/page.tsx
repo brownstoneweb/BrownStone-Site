@@ -5,6 +5,7 @@ import { getUserRoles } from "@/lib/supabase/auth";
 import { UserRoleManager } from "./UserRoleManager";
 import { InviteForm } from "./InviteForm";
 import { DeleteUserButton } from "./DeleteUserButton";
+import { LockUserButton } from "./LockUserButton";
 
 export default async function AdminUsersPage() {
   const supabase = await createClient();
@@ -46,6 +47,7 @@ export default async function AdminUsersPage() {
   let profilesList: typeof profiles = profiles ?? [];
   let userRolesList = userRoles ?? [];
   let lastSignInByUserId: Record<string, string | null> = {};
+  let bannedUntilByUserId: Record<string, string | null> = {};
 
   try {
     const admin = createAdminClient();
@@ -54,6 +56,7 @@ export default async function AdminUsersPage() {
     authUsers.forEach((u) => {
       if (u.email) authEmails.add(u.email.toLowerCase());
       lastSignInByUserId[u.id] = u.last_sign_in_at ?? null;
+      bannedUntilByUserId[u.id] = (u as { banned_until?: string | null }).banned_until ?? null;
     });
 
     const inviteByEmail = new Map<string, { id: string; role_id: string }>();
@@ -223,6 +226,9 @@ export default async function AdminUsersPage() {
                       {profile.id === me.id && (
                         <span className="ml-2 text-xs text-slate-400">(you)</span>
                       )}
+                      {bannedUntilByUserId[profile.id] && (
+                        <span className="ml-2 text-xs font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Locked</span>
+                      )}
                       {canManageRoles && roleLabelUnderName !== "" && (
                         <p className="text-xs text-slate-400 mt-0.5">{roleLabelUnderName}</p>
                       )}
@@ -251,10 +257,19 @@ export default async function AdminUsersPage() {
                   {canManageRoles && (
                     <td className="px-6 py-5 text-right">
                       {profile.id !== me.id && (
-                        <DeleteUserButton
-                          userId={profile.id}
-                          userName={profile.full_name || (profile as { email?: string }).email || profile.id.slice(0, 8)}
-                        />
+                        <span className="inline-flex items-center gap-1">
+                          {isAdminViewer && (
+                            <LockUserButton
+                              userId={profile.id}
+                              userName={profile.full_name || (profile as { email?: string }).email || profile.id.slice(0, 8)}
+                              isLocked={!!bannedUntilByUserId[profile.id]}
+                            />
+                          )}
+                          <DeleteUserButton
+                            userId={profile.id}
+                            userName={profile.full_name || (profile as { email?: string }).email || profile.id.slice(0, 8)}
+                          />
+                        </span>
                       )}
                     </td>
                   )}

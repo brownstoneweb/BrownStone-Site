@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { upsertContactByEmail, addContactActivity } from "@/lib/crm/contacts";
 import { notifyLeadModerator } from "@/lib/emails/lead-notify";
 import { logger } from "@/lib/logger";
+import { verifyRecaptchaV3, isHoneypotFilled } from "@/lib/recaptcha";
 
 const log = logger.create("api:newsletter");
 
@@ -17,11 +18,23 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: { email?: string; name?: string };
+  let body: { email?: string; name?: string; recaptchaToken?: string; [key: string]: unknown };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+
+  if (isHoneypotFilled(body)) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+
+  if (process.env.RECAPTCHA_SECRET_KEY) {
+    const result = await verifyRecaptchaV3(body.recaptchaToken ?? "", "newsletter", 0.5);
+    if (!result.success) {
+      log.warn("Newsletter form reCAPTCHA failed", result.error);
+      return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
+    }
   }
 
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";

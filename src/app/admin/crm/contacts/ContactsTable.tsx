@@ -34,6 +34,7 @@ export function ContactsTable({
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteContact, setConfirmDeleteContact] = useState<Contact | null>(null);
   const [segMembership, setSegMembership] = useState<SegmentMembership>({});
+  const [segmentsLoading, setSegmentsLoading] = useState(true);
   const [segFilter, setSegFilter] = useState("");
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -42,24 +43,30 @@ export function ContactsTable({
   const [exportingCsv, setExportingCsv] = useState(false);
 
   useEffect(() => {
-    if (contacts.length === 0) return;
+    if (contacts.length === 0) {
+      setSegMembership({});
+      setSegmentsLoading(false);
+      return;
+    }
+    setSegmentsLoading(true);
     const ids = contacts.map((c) => c.id);
-    Promise.all(
-      ids.map(async (id) => {
-        try {
-          const res = await fetch(`/api/crm/contacts/${id}/segments`);
-          if (res.ok) {
-            const segIds: string[] = await res.json();
-            return [id, segIds] as const;
-          }
-        } catch { /* ignore */ }
-        return [id, []] as const;
+    const params = new URLSearchParams({ contact_ids: ids.join(",") });
+    fetch(`/api/crm/contacts/segment-members?${params.toString()}`)
+      .then((res) => {
+        if (!res.ok) return {};
+        return res.json();
       })
-    ).then((pairs) => {
-      const map: SegmentMembership = {};
-      for (const [id, segIds] of pairs) map[id] = [...segIds];
-      setSegMembership(map);
-    });
+      .then((map: Record<string, string[]>) => {
+        const next: SegmentMembership = {};
+        for (const id of ids) next[id] = map[id] ?? [];
+        setSegMembership(next);
+      })
+      .catch(() => {
+        const next: SegmentMembership = {};
+        for (const id of ids) next[id] = [];
+        setSegMembership(next);
+      })
+      .finally(() => setSegmentsLoading(false));
   }, [contacts]);
 
   useEffect(() => {
@@ -413,17 +420,19 @@ export function ContactsTable({
                       </td>
                       <td className="px-5 py-5">
                         <div className="flex flex-wrap gap-1">
-                          {contactSegs.length > 0
-                            ? contactSegs.map((seg) => (
-                                <span
-                                  key={seg.id}
-                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium text-white"
-                                  style={{ backgroundColor: seg.color }}
-                                >
-                                  {seg.name}
-                                </span>
-                              ))
-                            : <span className="text-slate-300 text-xs">—</span>}
+                          {segmentsLoading
+                            ? <span className="text-slate-400 text-xs">…</span>
+                            : contactSegs.length > 0
+                              ? contactSegs.map((seg) => (
+                                  <span
+                                    key={seg.id}
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium text-white"
+                                    style={{ backgroundColor: seg.color }}
+                                  >
+                                    {seg.name}
+                                  </span>
+                                ))
+                              : <span className="text-slate-300 text-xs">—</span>}
                         </div>
                       </td>
                       <td className="px-5 py-5 text-sm text-slate-500">

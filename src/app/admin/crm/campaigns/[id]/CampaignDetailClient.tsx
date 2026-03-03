@@ -208,7 +208,7 @@ export function CampaignDetailClient({
             disabled={sending || (sendLimit != null && !sendLimit.canSend)}
             className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-semibold text-sm disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {sending ? "Sending..." : `Send batch (up to 10)`}
+            {sending ? "Sending..." : `Send batch (up to 20)`}
           </button>
           {sendLimit && !sendLimit.canSend && (
             <p className="text-sm text-amber-600 mt-2 font-medium">
@@ -216,7 +216,7 @@ export function CampaignDetailClient({
             </p>
           )}
           <p className="text-xs text-slate-500 mt-2">
-            Sends up to 10 emails per click. Respects daily/hourly limits.
+            Sends up to 20 emails per click. Respects daily/hourly limits.
           </p>
         </div>
       )}

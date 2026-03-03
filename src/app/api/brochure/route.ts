@@ -9,6 +9,7 @@ import {
 } from "@/lib/emails/celestia-brochure";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
+import { verifyRecaptchaV3, isHoneypotFilled } from "@/lib/recaptcha";
 
 const log = logger.create("api:brochure");
 
@@ -23,11 +24,23 @@ export async function POST(request: Request) {
 
   const client = new ServerClient(process.env.POSTMARK_API_KEY);
 
-  let body: { email?: string; project?: string; consent?: boolean };
+  let body: { email?: string; project?: string; consent?: boolean; recaptchaToken?: string; [key: string]: unknown };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
+
+  if (isHoneypotFilled(body)) {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
+
+  if (process.env.RECAPTCHA_SECRET_KEY) {
+    const result = await verifyRecaptchaV3(body.recaptchaToken ?? "", "brochure", 0.5);
+    if (!result.success) {
+      log.warn("Brochure form reCAPTCHA failed", result.error);
+      return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
+    }
   }
 
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";

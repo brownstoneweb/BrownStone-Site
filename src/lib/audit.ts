@@ -22,7 +22,9 @@ export type AuditAction =
   | "login_failure"
   | "password_reset"
   | "page_view"
-  | "view";
+  | "view"
+  | "lock_user"
+  | "unlock_user";
 
 export type AuditResourceType =
   | "contact"

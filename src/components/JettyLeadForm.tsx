@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
+import { HONEYPOT_FIELD } from "@/lib/recaptcha";
 
 export default function JettyLeadForm() {
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const { getToken } = useRecaptcha();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -25,10 +28,18 @@ export default function JettyLeadForm() {
     setMessage("");
 
     try {
+      const recaptchaToken = await getToken("lakehouse");
+      const form = e.currentTarget;
+      const honeypot = (new FormData(form).get(HONEYPOT_FIELD) as string) ?? "";
       const res = await fetch("/api/lakehouse-leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), consent }),
+        body: JSON.stringify({
+          email: email.trim(),
+          consent,
+          recaptchaToken: recaptchaToken ?? undefined,
+          [HONEYPOT_FIELD]: honeypot,
+        }),
       });
 
       const data = await res.json();
@@ -72,6 +83,7 @@ export default function JettyLeadForm() {
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-md mx-auto space-y-4">
+      <input type="text" name={HONEYPOT_FIELD} tabIndex={-1} autoComplete="off" className="absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden" aria-hidden />
       <div>
         <input
           type="email"
