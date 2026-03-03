@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
       } catch {
         // ignore
       }
-      setError(err.message);
+      setError(err.message?.toLowerCase().includes("banned") ? "User Error" : err.message);
       return;
     }
     setLoading(false);

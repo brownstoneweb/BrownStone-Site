@@ -54,7 +54,7 @@ export default function AdminUpdatePasswordPage() {
     const { error: err } = await supabase.auth.updateUser({ password });
     setLoading(false);
     if (err) {
-      setError(err.message);
+      setError(err.message?.toLowerCase().includes("banned") ? "User Error" : err.message);
       return;
     }
     try {

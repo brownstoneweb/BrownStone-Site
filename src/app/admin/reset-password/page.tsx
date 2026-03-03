@@ -21,7 +21,8 @@ export default function AdminResetPasswordPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Something went wrong. Please try again.");
+        const msg = data.error ?? "Something went wrong. Please try again.";
+        setError(msg.toLowerCase().includes("banned") ? "User Error" : msg);
         setLoading(false);
         return;
       }
