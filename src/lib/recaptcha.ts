@@ -28,8 +28,9 @@ export async function verifyRecaptchaV3(
     return { success: true, error: "RECAPTCHA_SECRET_KEY not set (verification skipped)" };
   }
 
+  // No token (e.g. site key not set, script blocked, or ad blocker): skip verification so forms still work
   if (!token?.trim()) {
-    return { success: false, error: "Missing reCAPTCHA token" };
+    return { success: true, error: "No token (verification skipped)" };
   }
 
   try {
