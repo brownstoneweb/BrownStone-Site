@@ -46,10 +46,9 @@ export async function POST(request: Request) {
 
   if (process.env.RECAPTCHA_SECRET_KEY) {
     const token = body.recaptchaToken;
-    const result = await verifyRecaptchaV3(token ?? "", "contact", 0.5);
+    const result = await verifyRecaptchaV3(token ?? "", "contact", 0.3);
     if (!result.success) {
-      log.warn("Contact form reCAPTCHA failed", result.error);
-      return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
+      log.warn("Contact form reCAPTCHA failed (allowing submission)", result.error);
     }
   }
 

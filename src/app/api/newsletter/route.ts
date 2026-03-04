@@ -30,10 +30,9 @@ export async function POST(request: Request) {
   }
 
   if (process.env.RECAPTCHA_SECRET_KEY) {
-    const result = await verifyRecaptchaV3(body.recaptchaToken ?? "", "newsletter", 0.5);
+    const result = await verifyRecaptchaV3(body.recaptchaToken ?? "", "newsletter", 0.3);
     if (!result.success) {
-      log.warn("Newsletter form reCAPTCHA failed", result.error);
-      return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
+      log.warn("Newsletter form reCAPTCHA failed (allowing submission)", result.error);
     }
   }
 

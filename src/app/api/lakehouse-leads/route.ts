@@ -33,10 +33,9 @@ export async function POST(request: Request) {
 
   const action = body.source === "exit_intent" ? "exit_intent" : "lakehouse";
   if (process.env.RECAPTCHA_SECRET_KEY) {
-    const result = await verifyRecaptchaV3(body.recaptchaToken ?? "", action, 0.5);
+    const result = await verifyRecaptchaV3(body.recaptchaToken ?? "", action, 0.3);
     if (!result.success) {
-      log.warn("Lakehouse/exit_intent form reCAPTCHA failed", result.error);
-      return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
+      log.warn("Lakehouse/exit_intent form reCAPTCHA failed (allowing submission)", result.error);
     }
   }
 

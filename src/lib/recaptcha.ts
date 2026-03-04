@@ -23,6 +23,11 @@ export async function verifyRecaptchaV3(
   _expectedAction?: string,
   minScore = 0.3
 ): Promise<VerifyResult> {
+  // In development, skip verification so forms always work on localhost (no need to add localhost in reCAPTCHA console)
+  if (process.env.NODE_ENV === "development") {
+    return { success: true };
+  }
+
   const secret = process.env.RECAPTCHA_SECRET_KEY;
   if (!secret?.trim()) {
     return { success: true, error: "RECAPTCHA_SECRET_KEY not set (verification skipped)" };
