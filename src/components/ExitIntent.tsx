@@ -71,7 +71,12 @@ export default function ExitIntent() {
     setStatus("loading");
     setMessage("");
     try {
-      const recaptchaToken = await getToken("exit_intent");
+      let recaptchaToken: string | null = null;
+      try {
+        recaptchaToken = await getToken("exit_intent");
+      } catch {
+        // reCAPTCHA not ready or failed; send without token (server may still accept)
+      }
       const form = e.currentTarget;
       const honeypot = (new FormData(form).get(HONEYPOT_FIELD) as string) ?? "";
       const res = await fetch("/api/lakehouse-leads", {
@@ -85,10 +90,10 @@ export default function ExitIntent() {
           [HONEYPOT_FIELD]: honeypot,
         }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setStatus("error");
-        setMessage(data.error || "Something went wrong. Please try again.");
+        setMessage((data as { error?: string }).error || "Something went wrong. Please try again.");
         return;
       }
       setStatus("success");

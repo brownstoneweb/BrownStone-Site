@@ -28,7 +28,12 @@ export default function JettyLeadForm() {
     setMessage("");
 
     try {
-      const recaptchaToken = await getToken("lakehouse");
+      let recaptchaToken: string | null = null;
+      try {
+        recaptchaToken = await getToken("lakehouse");
+      } catch {
+        // reCAPTCHA not ready or failed; send without token (server may still accept)
+      }
       const form = e.currentTarget;
       const honeypot = (new FormData(form).get(HONEYPOT_FIELD) as string) ?? "";
       const res = await fetch("/api/lakehouse-leads", {
@@ -42,11 +47,11 @@ export default function JettyLeadForm() {
         }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
         setStatus("error");
-        setMessage(data.error || "Something went wrong. Please try again.");
+        setMessage((data as { error?: string }).error || "Something went wrong. Please try again.");
         return;
       }
 
