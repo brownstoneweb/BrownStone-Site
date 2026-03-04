@@ -41,9 +41,9 @@ export async function PATCH(
   const lock = body.lock === true;
 
   const admin = createAdminClient();
-  // ban_duration: long duration = locked; empty string = unlocked
+  // ban_duration: long duration = locked; "none" = unlocked (GoTrue requires "none" to clear ban)
   const { error } = await admin.auth.admin.updateUserById(targetUserId, {
-    ban_duration: lock ? "876000h" : "",
+    ban_duration: lock ? "876000h" : "none",
   });
 
   if (error) {
