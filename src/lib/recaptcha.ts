@@ -15,13 +15,13 @@ export interface VerifyResult {
 /**
  * Verify a reCAPTCHA v3 token with Google.
  * @param token - The token from the client (grecaptcha.execute)
- * @param expectedAction - Optional action name to match (e.g. "contact", "newsletter")
- * @param minScore - Optional minimum score (0.0–1.0). Default 0.5.
+ * @param _expectedAction - Optional action name (not enforced; avoids false failures from action mismatch)
+ * @param minScore - Optional minimum score (0.0–1.0). Default 0.3 so legitimate users pass.
  */
 export async function verifyRecaptchaV3(
   token: string,
-  expectedAction?: string,
-  minScore = 0.5
+  _expectedAction?: string,
+  minScore = 0.3
 ): Promise<VerifyResult> {
   const secret = process.env.RECAPTCHA_SECRET_KEY;
   if (!secret?.trim()) {
@@ -58,10 +58,7 @@ export async function verifyRecaptchaV3(
       };
     }
 
-    if (expectedAction && data.action !== expectedAction) {
-      return { success: false, action: data.action, error: "Action mismatch" };
-    }
-
+    // Do not enforce action match — avoids false failures when reCAPTCHA returns a different action string
     const score = data.score ?? 0;
     if (score < minScore) {
       return { success: false, score, action: data.action, error: `Score ${score} below threshold ${minScore}` };

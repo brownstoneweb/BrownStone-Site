@@ -36,6 +36,7 @@ export async function updateSession(request: NextRequest) {
     const code = err && typeof err === "object" && "code" in err ? (err as { code?: string }).code : undefined;
     if (code === "refresh_token_not_found" || code === "invalid_refresh_token") {
       await supabase.auth.signOut();
+      // Stale session cleared; user will be sent to login on next admin request.
     }
   }
 
