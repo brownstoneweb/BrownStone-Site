@@ -74,7 +74,7 @@ export default async function RootLayout({
   const emergencyLockEnabled = settings?.emergency_lock_enabled === true;
   const lockMessage =
     (typeof settings?.emergency_lock_message === "string" && settings.emergency_lock_message.trim()) ||
-    "This site is temporarily unavailable due to an emergency security lock. Please check back soon.";
+    "Access to this site is currently restricted. Please check back later.";
 
   const orgSchema = {
     "@context": "https://schema.org",
@@ -120,10 +120,10 @@ export default async function RootLayout({
           <main className="min-h-screen flex items-center justify-center px-6 py-16 bg-[#0b0b0b] text-white">
             <div className="max-w-2xl w-full text-center">
               <p className="text-primary font-bold uppercase tracking-[0.25em] text-xs mb-4">
-                Emergency Lock
+              Access Restricted
               </p>
               <h1 className="text-3xl sm:text-4xl font-extrabold font-serif mb-6">
-                Site Temporarily Unavailable
+              Payment Required by Client (Brownstone)
               </h1>
               <p className="text-white/80 leading-relaxed text-base sm:text-lg mb-10">
                 {lockMessage}
@@ -148,7 +148,7 @@ export default async function RootLayout({
           <>
             {emergencyLockEnabled && adminBypass && (
               <div className="bg-red-50 text-red-800 border-b border-red-200 px-4 py-2 text-sm">
-                Emergency lock is enabled. Visitors are blocked. Manage it in{" "}
+                Access restricted. Visitors are blocked. Manage it in{" "}
                 <Link href="/admin/security" className="underline font-medium hover:no-underline">
                   Admin → Security
                 </Link>

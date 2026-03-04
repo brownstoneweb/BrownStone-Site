@@ -49,23 +49,23 @@ export function SecurityForm({ initialEnabled, initialMessage }: Props) {
           className="rounded border-slate-300"
           disabled={saving}
         />
-        <span className="font-medium text-earthy">Enable emergency lock</span>
+        <span className="font-medium text-earthy">Enable access restriction</span>
       </label>
 
       <div>
         <label className="block text-sm font-medium text-earthy mb-1">
-          Lock screen message (optional)
+          Message shown on restricted screen (optional)
         </label>
         <textarea
           name="message"
           defaultValue={initialMessage}
           rows={4}
           className="w-full border border-grey/20 rounded-lg px-3 py-2"
-          placeholder="Example: This site is temporarily unavailable due to an emergency security lock. Please check back soon."
+          placeholder="Example: Access to this site is currently restricted. Please check back later."
           disabled={saving}
         />
         <p className="text-xs text-grey mt-2">
-          Keep this neutral. This message is displayed to all visitors when locked.
+          Shown to visitors when access is restricted. Keep it neutral.
         </p>
       </div>
 

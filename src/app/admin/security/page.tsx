@@ -30,7 +30,7 @@ export default async function AdminSecurityPage({
     <div className="max-w-3xl">
       <h1 className="text-2xl font-bold text-earthy mb-2">Security</h1>
       <p className="text-grey mb-8">
-        Emergency lock blocks all public pages with a full-screen notice. Admin routes remain accessible so you can disable it.
+        When enabled, visitors see an “Access Restricted” notice on all public pages. Admin routes remain accessible so you can turn it off.
       </p>
 
       {errorParam && (
@@ -42,9 +42,9 @@ export default async function AdminSecurityPage({
       <div className={`rounded-2xl border p-6 bg-white ${enabled ? "border-red-200" : "border-slate-100"}`}>
         <div className="flex items-start justify-between gap-6 flex-wrap">
           <div>
-            <h2 className="text-lg font-bold text-earthy">Emergency lock</h2>
+            <h2 className="text-lg font-bold text-earthy">Access restricted</h2>
             <p className="text-sm text-grey mt-1 max-w-xl">
-              When enabled, visitors will see the lock screen instead of the website content.
+              When enabled, visitors see “Access Restricted” instead of the website content.
             </p>
             {updatedAt && (
               <p className="text-xs text-slate-400 mt-3">
