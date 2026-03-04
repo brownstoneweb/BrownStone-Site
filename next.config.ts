@@ -24,11 +24,11 @@ const nextConfig: NextConfig = {
           key: "Content-Security-Policy",
           value: [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.gstatic.com",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
             "img-src 'self' data: blob: https://pub-3e7b2072ee7b4288bdc8a3613d022372.r2.dev https://brownstoneltd.com https://www.brownstoneltd.com https://assets.brownstoneltd.com https://www.googletagmanager.com",
             "font-src 'self' https://fonts.gstatic.com",
-            "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://pub-3e7b2072ee7b4288bdc8a3613d022372.r2.dev",
+            "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://www.google.com https://www.recaptcha.net https://pub-3e7b2072ee7b4288bdc8a3613d022372.r2.dev",
             "frame-src 'self' https://www.youtube.com https://player.vimeo.com https://www.google.com",
             "object-src 'none'",
             "base-uri 'self'",
