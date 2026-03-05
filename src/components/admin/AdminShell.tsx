@@ -41,14 +41,13 @@ const navSections = [
       { href: "/admin/users", label: "Users", icon: "people" as const },
       { href: "/admin/roles", label: "Roles", icon: "badge" as const },
       { href: "/admin/audit-log", label: "Audit Log", icon: "audit" as const, adminOnly: true },
-      { href: "/admin/security", label: "Security", icon: "lock" as const, adminOnly: true },
       { href: "/admin/profile", label: "Profile", icon: "person" as const },
       { href: "/admin/manual", label: "Manual", icon: "book" as const },
     ],
   },
 ] as const;
 
-type NavIconName = "dashboard" | "article" | "folder" | "image" | "home" | "mail" | "people" | "pipeline" | "campaigns" | "templates" | "analytics" | "badge" | "person" | "audit" | "lock" | "book" | "snippet";
+type NavIconName = "dashboard" | "article" | "folder" | "image" | "home" | "mail" | "people" | "pipeline" | "campaigns" | "templates" | "analytics" | "badge" | "person" | "audit" | "book" | "snippet";
 
 function NavIcon({ name }: { name: NavIconName }) {
   const c = "w-5 h-5 shrink-0";
@@ -112,10 +111,6 @@ function NavIcon({ name }: { name: NavIconName }) {
     case "audit":
       return (
         <svg className={c} fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 9h-2V9.5C11 8.67 10.33 8 9.5 8S8 8.67 8 9.5V11H6V9.5C6 7.57 7.57 6 9.5 6S13 7.57 13 9.5V11zm-2 7H8v-2h3v2zm5-4H8v-2h8v2zm-1-9V3.5L18.5 9H13z"/></svg>
-      );
-    case "lock":
-      return (
-        <svg className={c} fill="currentColor" viewBox="0 0 24 24"><path d="M12 1a5 5 0 00-5 5v3H6a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2v-9a2 2 0 00-2-2h-1V6a5 5 0 00-5-5zm-3 8V6a3 3 0 116 0v3H9zm3 4a2 2 0 00-1 3.732V19a1 1 0 002 0v-2.268A2 2 0 0012 13z\"/></svg>
       );
     case "book":
       return (
