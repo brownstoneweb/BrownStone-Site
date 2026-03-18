@@ -38,6 +38,8 @@ import {
   faGears,
   faVideo,
   faKey,
+  faBridge,
+  faWater,
 } from "@fortawesome/free-solid-svg-icons";
 import { faLinkedin, faInstagram, faXTwitter, faFacebook, faWhatsapp, faYoutube } from "@fortawesome/free-brands-svg-icons";
 
@@ -79,6 +81,8 @@ export const icons = {
   gears: faGears,
   video: faVideo,
   key: faKey,
+  bridge: faBridge,
+  dam: faWater,
   linkedin: faLinkedin,
   instagram: faInstagram,
   xTwitter: faXTwitter,

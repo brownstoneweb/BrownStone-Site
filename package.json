@@ -25,6 +25,7 @@
     "@tiptap/pm": "^3.19.0",
     "@tiptap/react": "^3.19.0",
     "@tiptap/starter-kit": "^3.19.0",
+    "framer-motion": "^12.36.0",
     "happy-dom": "^20.6.1",
     "next": "^15.0.0",
     "postmark": "^4.0.5",
@@ -36,12 +37,12 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@types/sanitize-html": "^2.16.0",
     "autoprefixer": "^10.4.0",
+    "cross-env": "^7.0.3",
     "eslint": "^9.0.0",
     "eslint-config-next": "^15.0.0",
     "postcss": "^8.4.0",

@@ -21,6 +21,7 @@ const navLinks: Array<
   { href: "/portfolio", label: "Projects" },
   { label: "Properties", items: propertyLinks },
   { href: "/blog", label: "Blog" },
+  { href: "/media", label: "Media" },
 ];
 
 export type NavVariant = "solid" | "transparent";
