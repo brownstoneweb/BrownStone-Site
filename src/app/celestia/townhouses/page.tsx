@@ -285,7 +285,7 @@ export default function TownhousesPage() {
               <div>
                 <strong className="text-earthy block mb-1">Reserve Your Future</strong>
                 <span className="text-earthy/80 font-light">
-                  A $3,000 reservation fee withdraws your selected unit from the market.
+                  A $5,000 reservation fee withdraws your selected unit from the market.
                 </span>
               </div>
             </li>

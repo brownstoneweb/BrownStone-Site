@@ -268,15 +268,17 @@ export default function MediaGallery() {
   )
 
   const LandmarkCard = ({ name, description, distance, icon }: LandmarkCardProps) => (
-    <div className="bg-white/80 border border-white/40 rounded-2xl p-6 flex flex-col sm:flex-row gap-4 shadow-sm">
-      <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10">
-        <FaIcon name={icon} className="w-8 h-8 text-primary" />
+    <div className="bg-white/80 border border-white/40 rounded-2xl p-6 flex flex-col gap-4 shadow-sm">
+      <div className="flex gap-4">
+        <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 flex-shrink-0">
+          <FaIcon name={icon} className="w-8 h-8 text-primary" />
+        </div>
+        <div className="flex-1">
+          <h3 className="text-earthy font-semibold text-lg">{name}</h3>
+          <p className="text-grey text-sm mt-1 leading-snug">{description}</p>
+        </div>
       </div>
-      <div className="flex-1">
-        <h3 className="text-earthy font-semibold text-lg">{name}</h3>
-        <p className="text-grey text-sm mt-1 leading-relaxed">{description}</p>
-      </div>
-      <div className="text-primary font-semibold text-sm flex items-center">{distance}</div>
+      <div className="text-primary font-semibold text-sm border-t border-white/30 pt-2 text-center">{distance}</div>
     </div>
   )
 
