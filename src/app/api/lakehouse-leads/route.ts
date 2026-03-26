@@ -8,7 +8,7 @@ import { notifyLeadModerator } from "@/lib/emails/lead-notify";
 
 const log = logger.create("api:lakehouse-leads");
 
-// --- Define table types for Supabase ---
+// --- Supabase table types ---
 interface LakehouseLead {
   email: string;
   consent: boolean;
@@ -25,15 +25,18 @@ interface Lead {
 
 export async function POST(request: Request) {
   if (!process.env.RESEND_API_KEY) {
-    return NextResponse.json(
-      { error: "Email service is not configured." },
-      { status: 503 }
-    );
+    return NextResponse.json({ error: "Email service is not configured." }, { status: 503 });
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY);
 
-  let body: { email?: string; consent?: boolean; source?: string; recaptchaToken?: string; [key: string]: unknown };
+  let body: {
+    email?: string;
+    consent?: boolean;
+    source?: string;
+    recaptchaToken?: string;
+    [key: string]: unknown;
+  };
   try {
     body = await request.json();
   } catch {
@@ -75,15 +78,16 @@ export async function POST(request: Request) {
     if (process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.NEXT_PUBLIC_SUPABASE_URL) {
       const supabase = createAdminClient();
 
-      const { error: lakehouseErr } = await supabase.from<LakehouseLead>("lakehouse_leads").insert({ email, consent });
+      // Insert into lakehouse_leads
+      const { error: lakehouseErr } = await supabase
+        .from<LakehouseLead, { email: string; consent: boolean }>("lakehouse_leads")
+        .insert({ email, consent });
       if (lakehouseErr) log.error("Lakehouse leads insert failed", lakehouseErr);
 
-      const { error: leadsErr } = await supabase.from<Lead>("leads").insert({
-        email,
-        source,
-        project: "lakehouse",
-        consent,
-      });
+      // Insert into unified leads table
+      const { error: leadsErr } = await supabase
+        .from<Lead, { email: string; source: string; project: string; consent: boolean }>("leads")
+        .insert({ email, source, project: "lakehouse", consent });
       if (leadsErr) log.error("Unified leads insert failed", leadsErr);
       else {
         notifyLeadModerator({ source, email, project: "lakehouse" }).catch((e) =>
@@ -106,7 +110,7 @@ export async function POST(request: Request) {
   const html = getCelestiaBrochureHtml(baseUrl, "lakehouse", brochurePdfUrl);
   const text = getCelestiaBrochureText(baseUrl, brochurePdfUrl, "lakehouse");
 
-  // --- Send email via Resend ---
+  // --- Send brochure email via Resend ---
   try {
     await resend.emails.send({
       from: "onboarding@resend.dev", // replace with your verified Resend sender
@@ -114,7 +118,7 @@ export async function POST(request: Request) {
       subject,
       html,
       text,
-      // optional: reply_to: "creative@brownstoneltd.com",
+      // Optional: reply_to: "creative@brownstoneltd.com"
     });
   } catch (err) {
     log.error("Brochure email send failed", err);
