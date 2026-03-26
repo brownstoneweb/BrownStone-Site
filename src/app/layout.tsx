@@ -3,6 +3,7 @@ import { Manrope, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import ExitIntentDynamic from "@/components/ExitIntentDynamic";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import Script from "next/script"; // ✅ ADD THIS
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -81,16 +82,46 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${manrope.variable} ${playfair.variable}`}>
+      
       <head>
         <link rel="preload" as="image" href={heroImageUrl} />
         <link rel="alternate" type="text/plain" href={`${baseUrl}/llms.txt`} title="llms.txt" />
+
+        {/* GOOGLE TAG MANAGER */}
+        <Script id="gtm-script" strategy="afterInteractive">
+          {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id=GTM-M3JQFZPZ'+dl;
+            f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-M3JQFZPZ');
+          `}
+        </Script>
+        {/* END GTM */}
+
       </head>
+
       <body className="min-h-screen bg-white text-dark-brown antialiased">
+
+        {/* GTM NOSCRIPT */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-M3JQFZPZ"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
+
+        {/* SCHEMA */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
         />
+
         {children}
+
         <GoogleAnalytics />
         <ExitIntentDynamic />
       </body>
