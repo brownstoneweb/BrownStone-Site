@@ -85,7 +85,7 @@ export async function POST(request: Request) {
   try {
     // Send message to site owner
     await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "creative@brownstoneltd.com",
       to,
       subject: `Website inquiry from ${name.trim()}${projectType ? ` — ${projectType}` : ""}`,
       html: `
@@ -104,7 +104,7 @@ export async function POST(request: Request) {
         : undefined;
 
     await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "creative@brownstoneltd.com",
       to: emailTrimmed,
       subject: "We've received your message — Brownstone Construction",
       html: getContactReceivedHtml(baseUrl, brownstoneLogoUrl),
