@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { ServerClient } from "postmark";
+import { Resend } from "resend";
 import { getContactReceivedHtml, getContactReceivedText } from "@/lib/emails/contact-received";
-import { getPostmarkFrom } from "@/lib/emails/postmark-from";
-import { notifyLeadModerator } from "@/lib/emails/lead-notify";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
 import { verifyRecaptchaV3, isHoneypotFilled } from "@/lib/recaptcha";
 
 const log = logger.create("api:contact");
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   const to = process.env.CONTACTFORMMAIL;
@@ -17,14 +17,12 @@ export async function POST(request: Request) {
       { status: 503 }
     );
   }
-  if (!process.env.POSTMARK_API_KEY) {
+  if (!process.env.RESEND_API_KEY) {
     return NextResponse.json(
-      { error: "Email service not configured (POSTMARK_API_KEY)." },
+      { error: "Email service not configured (RESEND_API_KEY)." },
       { status: 503 }
     );
   }
-
-  const client = new ServerClient(process.env.POSTMARK_API_KEY);
 
   let body: {
     name?: string;
@@ -66,7 +64,7 @@ export async function POST(request: Request) {
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
     "https://brownstoneltd.com";
 
-  // Store lead — requires SUPABASE_SERVICE_ROLE_KEY (Supabase Dashboard → Settings → API)
+  // Store lead — requires SUPABASE_SERVICE_ROLE_KEY
   if (process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.NEXT_PUBLIC_SUPABASE_URL) {
     try {
       const supabase = createAdminClient();
@@ -79,57 +77,38 @@ export async function POST(request: Request) {
         consent: true,
       } as never);
       if (insertError) log.error("Lead insert failed", insertError);
-      else {
-        notifyLeadModerator({
-          source: "contact",
-          email: emailTrimmed,
-          name: name?.trim() ?? null,
-          message: message?.trim() ?? null,
-          project: projectType?.trim() || null,
-        }).catch((e) => log.error("Lead notification failed", e));
-      }
     } catch (err) {
       log.error("Lead storage failed", err);
     }
   }
 
   try {
-    await client.sendEmail({
-      From: getPostmarkFrom("contact"),
-      To: to.trim(),
-      ReplyTo: emailTrimmed,
-      Subject: `Website inquiry from ${name.trim()}${projectType ? ` — ${projectType}` : ""}`,
-      TextBody: [
-        `Name: ${name.trim()}`,
-        `Email: ${emailTrimmed}`,
-        projectType ? `Project type: ${projectType}` : null,
-        "",
-        "Message:",
-        message.trim(),
-      ]
-        .filter(Boolean)
-        .join("\n"),
+    // Send message to site owner
+    await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to,
+      subject: `Website inquiry from ${name.trim()}${projectType ? ` — ${projectType}` : ""}`,
+      html: `
+        <p><strong>Name:</strong> ${name.trim()}</p>
+        <p><strong>Email:</strong> ${emailTrimmed}</p>
+        ${projectType ? `<p><strong>Project type:</strong> ${projectType}</p>` : ""}
+        <p><strong>Message:</strong></p>
+        <p>${message.trim()}</p>
+      `,
     });
 
+    // Send auto-reply to user
     const brownstoneLogoUrl =
       typeof process.env.BROWNSTONE_LOGO_URL === "string" && process.env.BROWNSTONE_LOGO_URL.trim()
         ? process.env.BROWNSTONE_LOGO_URL.trim()
         : undefined;
 
-    const autoReplyReplyTo =
-      process.env.POSTMARK_REPLY_TO?.trim() || process.env.CONTACTFORMMAIL?.trim() || undefined;
-    try {
-      await client.sendEmail({
-        From: getPostmarkFrom("contact"),
-        To: emailTrimmed,
-        ...(autoReplyReplyTo && { ReplyTo: autoReplyReplyTo }),
-        Subject: "We've received your message — Brownstone Construction",
-        HtmlBody: getContactReceivedHtml(baseUrl, brownstoneLogoUrl),
-        TextBody: getContactReceivedText(baseUrl),
-      });
-    } catch (autoReplyErr) {
-      log.error("Auto-reply email failed", autoReplyErr);
-    }
+    await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: emailTrimmed,
+      subject: "We've received your message — Brownstone Construction",
+      html: getContactReceivedHtml(baseUrl, brownstoneLogoUrl),
+    });
 
     return NextResponse.json({ success: true });
   } catch (err) {

@@ -1,28 +1,17 @@
 import { NextResponse } from "next/server";
-import { ServerClient } from "postmark";
-import { getPostmarkFrom } from "@/lib/emails/postmark-from";
-import { notifyLeadModerator } from "@/lib/emails/lead-notify";
-import {
-  getCelestiaBrochureHtml,
-  getCelestiaBrochureText,
-  type BrochureProject,
-} from "@/lib/emails/celestia-brochure";
+import { Resend } from "resend";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
 import { verifyRecaptchaV3, isHoneypotFilled } from "@/lib/recaptcha";
+import { getCelestiaBrochureHtml, getCelestiaBrochureText, type BrochureProject } from "@/lib/emails/celestia-brochure";
 
 const log = logger.create("api:brochure");
-
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
-  if (!process.env.POSTMARK_API_KEY) {
-    return NextResponse.json(
-      { error: "Email service is not configured." },
-      { status: 503 }
-    );
+  if (!process.env.RESEND_API_KEY) {
+    return NextResponse.json({ error: "Email service not configured." }, { status: 503 });
   }
-
-  const client = new ServerClient(process.env.POSTMARK_API_KEY);
 
   let body: { email?: string; project?: string; consent?: boolean; recaptchaToken?: string; [key: string]: unknown };
   try {
@@ -37,9 +26,7 @@ export async function POST(request: Request) {
 
   if (process.env.RECAPTCHA_SECRET_KEY) {
     const result = await verifyRecaptchaV3(body.recaptchaToken ?? "", "brochure", 0.3);
-    if (!result.success) {
-      log.warn("Brochure form reCAPTCHA failed (allowing submission)", result.error);
-    }
+    if (!result.success) log.warn("Brochure form reCAPTCHA failed (allowing submission)", result.error);
   }
 
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
@@ -49,17 +36,11 @@ export async function POST(request: Request) {
   const consent = body.consent === true;
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return NextResponse.json(
-      { error: "Please enter a valid email address." },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
   }
 
   if (!consent) {
-    return NextResponse.json(
-      { error: "Please accept the terms to receive the brochure." },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Please accept the terms to receive the brochure." }, { status: 400 });
   }
 
   const baseUrl =
@@ -72,7 +53,7 @@ export async function POST(request: Request) {
       ? process.env.BROCHURE_PDF_URL.trim()
       : null;
 
-  // Store lead (optional)
+  // Store lead
   if (process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.NEXT_PUBLIC_SUPABASE_URL) {
     try {
       const supabase = createAdminClient();
@@ -82,13 +63,9 @@ export async function POST(request: Request) {
         project,
         consent: true,
       } as never);
-      if (!insertErr) {
-        notifyLeadModerator({ source: "brochure", email, project }).catch((e) =>
-          log.error("Lead notification failed", e)
-        );
-      }
-    } catch {
-      // Ignore
+      if (!insertErr) log.info("Lead stored successfully");
+    } catch (err) {
+      log.error("Lead storage failed", err);
     }
   }
 
@@ -99,26 +76,20 @@ export async function POST(request: Request) {
     project === "townhouse"
       ? "Your Celestia Townhouses Brochure — Brownstone Construction"
       : "Your Celestia Property Brochure — Brownstone Construction";
-  const replyTo = process.env.POSTMARK_REPLY_TO ?? "candace@brownstoneltd.com";
 
   try {
-    await client.sendEmail({
-      From: getPostmarkFrom("brochure"),
-      To: email,
-      ReplyTo: replyTo,
-      Subject: subject,
-      HtmlBody: html,
-      TextBody: text,
+    await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: email,
+      subject,
+      html,
+      text,
     });
   } catch (err) {
     log.error("Brochure email send failed", err);
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json(
-      {
-        error:
-          project === "townhouse"
-            ? "We could not send the Celestia Townhouses Brochure. Please try again."
-            : "We could not send the brochure. Please try again.",
-      },
+      { error: `Email service error: ${errorMessage}` },
       { status: 502 }
     );
   }
