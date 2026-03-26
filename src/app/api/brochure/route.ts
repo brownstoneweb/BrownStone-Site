@@ -6,7 +6,6 @@ import { verifyRecaptchaV3, isHoneypotFilled } from "@/lib/recaptcha";
 import { getCelestiaBrochureHtml, getCelestiaBrochureText, type BrochureProject } from "@/lib/emails/celestia-brochure";
 
 const log = logger.create("api:brochure");
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   if (!process.env.RESEND_API_KEY) {
@@ -28,6 +27,8 @@ export async function POST(request: Request) {
     const result = await verifyRecaptchaV3(body.recaptchaToken ?? "", "brochure", 0.3);
     if (!result.success) log.warn("Brochure form reCAPTCHA failed (allowing submission)", result.error);
   }
+
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   const project = (body.project === "townhouse" || body.project === "lakehouse" || body.project === "celestia"
