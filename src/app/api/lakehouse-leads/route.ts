@@ -8,6 +8,21 @@ import { notifyLeadModerator } from "@/lib/emails/lead-notify";
 
 const log = logger.create("api:lakehouse-leads");
 
+// --- Define table types for Supabase ---
+interface LakehouseLead {
+  email: string;
+  consent: boolean;
+  created_at?: string;
+}
+
+interface Lead {
+  email: string;
+  source: string;
+  project: string;
+  consent: boolean;
+  created_at?: string;
+}
+
 export async function POST(request: Request) {
   if (!process.env.RESEND_API_KEY) {
     return NextResponse.json(
@@ -55,21 +70,20 @@ export async function POST(request: Request) {
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
     "https://brownstoneltd.com";
 
-  // Store lead in Supabase
+  // --- Store lead in Supabase ---
   try {
     if (process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.NEXT_PUBLIC_SUPABASE_URL) {
       const supabase = createAdminClient();
 
-      const { error: lakehouseErr } = await supabase.from("lakehouse_leads").insert({ email, consent });
+      const { error: lakehouseErr } = await supabase.from<LakehouseLead>("lakehouse_leads").insert({ email, consent });
       if (lakehouseErr) log.error("Lakehouse leads insert failed", lakehouseErr);
 
-      const { error: leadsErr } = await supabase.from("leads").insert({
+      const { error: leadsErr } = await supabase.from<Lead>("leads").insert({
         email,
         source,
         project: "lakehouse",
         consent,
-      } as never);
-
+      });
       if (leadsErr) log.error("Unified leads insert failed", leadsErr);
       else {
         notifyLeadModerator({ source, email, project: "lakehouse" }).catch((e) =>
@@ -92,23 +106,20 @@ export async function POST(request: Request) {
   const html = getCelestiaBrochureHtml(baseUrl, "lakehouse", brochurePdfUrl);
   const text = getCelestiaBrochureText(baseUrl, brochurePdfUrl, "lakehouse");
 
+  // --- Send email via Resend ---
   try {
     await resend.emails.send({
-      from: "onboarding@resend.dev", // change to your verified Resend sender
+      from: "onboarding@resend.dev", // replace with your verified Resend sender
       to: email,
       subject,
       html,
       text,
-      // optional: reply_to can be added here if needed
-      // reply_to: "creative@brownstoneltd.com",
+      // optional: reply_to: "creative@brownstoneltd.com",
     });
   } catch (err) {
     log.error("Brochure email send failed", err);
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json(
-      { error: `Email service error: ${errorMessage}` },
-      { status: 502 }
-    );
+    return NextResponse.json({ error: `Email service error: ${errorMessage}` }, { status: 502 });
   }
 
   return NextResponse.json({ success: true, brochurePdfUrl: brochurePdfUrl ?? undefined });
