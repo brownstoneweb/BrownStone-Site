@@ -194,9 +194,10 @@ export default function MediaGallery() {
     videoLink: string
     images: string[]
     sliderRef: React.RefObject<HTMLDivElement | null>
+    objectPosition?: "object-top" | "object-bottom"
   }
 
-  const Slider = ({ title, description, videoImage, videoLink, images, sliderRef }: SliderProps) => (
+  const Slider = ({ title, description, videoImage, videoLink, images, sliderRef, objectPosition = "object-bottom" }: SliderProps) => (
     <div className="w-full max-w-7xl mx-auto p-6">
 
       <section className="py-16 text-center">
@@ -220,7 +221,7 @@ export default function MediaGallery() {
       >
         <img
           src={videoImage}
-          className="w-full h-[500px] object-cover object-bottom"
+          className={`w-full h-[500px] object-cover ${objectPosition}`}
         />
 
         <div className="absolute inset-0 flex items-center justify-center">
@@ -276,10 +277,22 @@ export default function MediaGallery() {
         </div>
         <div className="flex-1">
           <h3 className="text-earthy font-semibold text-lg">{name}</h3>
-          <p className="text-grey text-sm mt-1 leading-snug">{description}</p>
+          <p
+            className={`text-grey text-sm leading-snug ${
+              name === "Akosombo Dam" || name === "Adomi Bridge" ? "m-4" : "mb-7"
+            }`}
+          >
+            {description}
+          </p>
         </div>
       </div>
-      <div className="text-primary font-semibold text-sm border-t border-white/30 pt-2 text-center">{distance}</div>
+      <div
+        className={`text-primary font-semibold text-sm border-t border-white/30 pt-2 text-center ${
+          name === "Akosombo Dam" || name === "Adomi Bridge" ? "mt-1" : ""
+        }`}
+      >
+        {distance}
+      </div>
     </div>
   )
 
@@ -345,7 +358,7 @@ export default function MediaGallery() {
         <Slider
           title="Lakehouse - Celestia"
           description={<p className="font-semibold text-earthy">Perfect for global-minded achievers.</p>}
-          videoImage="/Lake.jpg"
+          videoImage="/Lakehouse/Lake.jpg"
           videoLink="https://www.youtube.com/embed/-Bv12I-WlzE"
           images={images2}
           sliderRef={lakeRef}
