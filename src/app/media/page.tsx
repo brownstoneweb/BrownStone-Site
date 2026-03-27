@@ -1,5 +1,6 @@
 "use client"
 
+
 import Nav from "@/components/Nav";
 import { FaIcon, IconName } from "@/components/Icons";
 import Footer from "@/components/Footer";
@@ -344,7 +345,7 @@ export default function MediaGallery() {
         <Slider
           title="Lakehouse - Celestia"
           description={<p className="font-semibold text-earthy">Perfect for global-minded achievers.</p>}
-          videoImage="/lakehouse.jpg"
+          videoImage="/Lake.jpg"
           videoLink="https://www.youtube.com/embed/-Bv12I-WlzE"
           images={images2}
           sliderRef={lakeRef}
