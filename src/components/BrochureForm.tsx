@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRecaptcha } from "@/hooks/useRecaptcha";
 import { HONEYPOT_FIELD } from "@/lib/recaptcha";
 
@@ -8,11 +8,8 @@ export type BrochureProject = "celestia" | "townhouse" | "lakehouse";
 
 type Props = {
   project?: BrochureProject;
-  /** Optional class for the wrapper */
   className?: string;
-  /** Success message override */
   successMessage?: string;
-  /** Compact layout (e.g. inline on Celestia CTA) */
   variant?: "default" | "compact";
 };
 
@@ -28,13 +25,18 @@ export default function BrochureForm({
   const [message, setMessage] = useState("");
   const { getToken } = useRecaptcha();
 
+  // ✅ REF for honeypot (NO DOM QUERY, NO FORM ISSUE)
+  const honeypotRef = useRef<HTMLInputElement>(null);
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     if (!email.trim()) {
       setStatus("error");
       setMessage("Please enter your email address.");
       return;
     }
+
     if (!consent) {
       setStatus("error");
       setMessage(
@@ -49,17 +51,22 @@ export default function BrochureForm({
     setMessage("");
 
     try {
+      // ✅ reCAPTCHA
       let recaptchaToken: string | null = null;
       try {
         recaptchaToken = await getToken("brochure");
       } catch {
-        // reCAPTCHA not ready or failed; send without token (server may still accept)
+        console.warn("reCAPTCHA failed or not ready");
       }
-      const form = e.currentTarget;
-      const honeypot = (new FormData(form).get(HONEYPOT_FIELD) as string) ?? "";
+
+      // ✅ SAFE honeypot (NO errors possible)
+      const honeypot = honeypotRef.current?.value || "";
+
       const res = await fetch("/api/brochure", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           email: email.trim(),
           project,
@@ -72,8 +79,12 @@ export default function BrochureForm({
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        console.error("API ERROR RESPONSE:", data);
         setStatus("error");
-        setMessage((data as { error?: string }).error || "Something went wrong. Please try again.");
+        setMessage(
+          (data as { error?: string }).error ||
+            "Something went wrong. Please try again."
+        );
         return;
       }
 
@@ -82,20 +93,23 @@ export default function BrochureForm({
       setEmail("");
       setConsent(false);
 
-      // Auto-download PDF if URL returned
+      // ✅ Optional download
       if (data.brochurePdfUrl && typeof data.brochurePdfUrl === "string") {
         const a = document.createElement("a");
         a.href = data.brochurePdfUrl;
-        a.download = data.brochurePdfUrl.split("/").pop()?.split("?")[0] ?? "brochure.pdf";
+        a.download =
+          data.brochurePdfUrl.split("/").pop()?.split("?")[0] ||
+          "brochure.pdf";
         a.target = "_blank";
         a.rel = "noopener noreferrer";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
       }
-    } catch {
+    } catch (err: any) {
+      console.error("FRONTEND ERROR:", err);
       setStatus("error");
-      setMessage("Something went wrong. Please try again.");
+      setMessage(err?.message || "Something went wrong. Check console.");
     }
   }
 
@@ -109,7 +123,9 @@ export default function BrochureForm({
         }
       >
         <p className="font-medium text-earthy">{message}</p>
-        <p className="mt-1 text-sm text-earthy/70">Check your inbox (and spam folder).</p>
+        <p className="mt-1 text-sm text-earthy/70">
+          Check your inbox (and spam folder).
+        </p>
       </div>
     );
   }
@@ -121,8 +137,25 @@ export default function BrochureForm({
 
   return (
     <form onSubmit={handleSubmit} className={`${formClass} ${className}`}>
-      <input type="text" name={HONEYPOT_FIELD} tabIndex={-1} autoComplete="off" className="absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden" aria-hidden />
-      <div className={variant === "compact" ? "w-full sm:w-auto sm:flex-1 sm:min-w-[220px]" : ""}>
+      
+      {/* ✅ Honeypot with REF */}
+      <input
+        ref={honeypotRef}
+        type="text"
+        name={HONEYPOT_FIELD}
+        tabIndex={-1}
+        autoComplete="off"
+        className="absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden"
+        aria-hidden
+      />
+
+      <div
+        className={
+          variant === "compact"
+            ? "w-full sm:w-auto sm:flex-1 sm:min-w-[220px]"
+            : ""
+        }
+      >
         <input
           type="email"
           name="email"
@@ -131,10 +164,10 @@ export default function BrochureForm({
           placeholder="Your email"
           required
           disabled={status === "loading"}
-          className="w-full px-5 py-4 rounded-lg border-2 border-[#f8f6f6] focus:border-primary focus:ring-0 focus:outline-none transition-all text-earthy placeholder:text-earthy/50 disabled:opacity-70"
-          suppressHydrationWarning
+          className="w-full px-5 py-4 rounded-lg border-2 border-[#f8f6f6] focus:border-primary focus:outline-none transition-all text-earthy placeholder:text-earthy/50 disabled:opacity-70"
         />
       </div>
+
       <label
         className={
           variant === "compact"
@@ -148,7 +181,6 @@ export default function BrochureForm({
           onChange={(e) => setConsent(e.target.checked)}
           disabled={status === "loading"}
           className="mt-1 h-4 w-4 shrink-0 rounded border-earthy/40 accent-primary"
-          suppressHydrationWarning
         />
         <span>
           I agree to receive the brochure and occasional updates from Brownstone.{" "}
@@ -163,6 +195,7 @@ export default function BrochureForm({
           </a>
         </span>
       </label>
+
       <button
         type="submit"
         disabled={status === "loading"}
@@ -171,9 +204,10 @@ export default function BrochureForm({
         {status === "loading"
           ? "Sending…"
           : project === "townhouse"
-            ? "Get the Celestia Townhouses Brochure"
-            : "Get the Brochure"}
+          ? "Get the Celestia Townhouses Brochure"
+          : "Get the Brochure"}
       </button>
+
       {status === "error" && message && (
         <p className="text-red-600 text-sm">{message}</p>
       )}

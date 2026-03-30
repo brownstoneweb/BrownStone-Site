@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRecaptcha } from "@/hooks/useRecaptcha";
 import { HONEYPOT_FIELD } from "@/lib/recaptcha";
 
@@ -11,13 +11,18 @@ export default function JettyLeadForm() {
   const [message, setMessage] = useState("");
   const { getToken } = useRecaptcha();
 
+  // ✅ FIX: useRef instead of FormData
+  const honeypotRef = useRef<HTMLInputElement>(null);
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     if (!email.trim()) {
       setStatus("error");
       setMessage("Please enter your email address.");
       return;
     }
+
     if (!consent) {
       setStatus("error");
       setMessage("Please accept the terms to receive your exclusive details.");
@@ -28,17 +33,22 @@ export default function JettyLeadForm() {
     setMessage("");
 
     try {
+      // ✅ reCAPTCHA
       let recaptchaToken: string | null = null;
       try {
         recaptchaToken = await getToken("lakehouse");
       } catch {
-        // reCAPTCHA not ready or failed; send without token (server may still accept)
+        console.warn("reCAPTCHA failed or not ready");
       }
-      const form = e.currentTarget;
-      const honeypot = (new FormData(form).get(HONEYPOT_FIELD) as string) ?? "";
+
+      // ✅ SAFE honeypot
+      const honeypot = honeypotRef.current?.value || "";
+
       const res = await fetch("/api/lakehouse-leads", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           email: email.trim(),
           consent,
@@ -50,8 +60,12 @@ export default function JettyLeadForm() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        console.error("API ERROR RESPONSE:", data);
         setStatus("error");
-        setMessage((data as { error?: string }).error || "Something went wrong. Please try again.");
+        setMessage(
+          (data as { error?: string }).error ||
+            "Something went wrong. Please try again."
+        );
         return;
       }
 
@@ -60,20 +74,25 @@ export default function JettyLeadForm() {
       setEmail("");
       setConsent(false);
 
-      // Auto-download PDF if URL returned
+      // ✅ Optional download
       if (data.brochurePdfUrl && typeof data.brochurePdfUrl === "string") {
         const a = document.createElement("a");
         a.href = data.brochurePdfUrl;
-        a.download = data.brochurePdfUrl.split("/").pop()?.split("?")[0] ?? "brochure.pdf";
+        a.download =
+          data.brochurePdfUrl.split("/").pop()?.split("?")[0] ||
+          "brochure.pdf";
         a.target = "_blank";
         a.rel = "noopener noreferrer";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
       }
-    } catch {
+    } catch (err: any) {
+      console.error("FRONTEND ERROR:", err);
       setStatus("error");
-      setMessage("Something went wrong. Please try again.");
+      setMessage(
+        err?.message || "Something went wrong. Check console."
+      );
     }
   }
 
@@ -81,14 +100,27 @@ export default function JettyLeadForm() {
     return (
       <div className="rounded-lg border border-white/30 bg-white/5 px-8 py-6 backdrop-blur-sm">
         <p className="text-white font-medium">{message}</p>
-        <p className="text-white/70 text-sm mt-1">We have sent the details to your email.</p>
+        <p className="text-white/70 text-sm mt-1">
+          We have sent the details to your email.
+        </p>
       </div>
     );
   }
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-md mx-auto space-y-4">
-      <input type="text" name={HONEYPOT_FIELD} tabIndex={-1} autoComplete="off" className="absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden" aria-hidden />
+      
+      {/* ✅ Honeypot with ref */}
+      <input
+        ref={honeypotRef}
+        type="text"
+        name={HONEYPOT_FIELD}
+        tabIndex={-1}
+        autoComplete="off"
+        className="absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden"
+        aria-hidden
+      />
+
       <div>
         <input
           type="email"
@@ -98,18 +130,17 @@ export default function JettyLeadForm() {
           placeholder="Your email"
           required
           disabled={status === "loading"}
-          className="w-full px-5 py-4 rounded-lg border-2 border-white/30 bg-white/10 text-white placeholder:text-white/50 focus:border-white/60 focus:ring-0 focus:outline-none transition-colors disabled:opacity-70"
-          suppressHydrationWarning
+          className="w-full px-5 py-4 rounded-lg border-2 border-white/30 bg-white/10 text-white placeholder:text-white/50 focus:border-white/60 focus:outline-none transition-colors disabled:opacity-70"
         />
       </div>
+
       <label className="flex items-start gap-3 cursor-pointer text-left group">
         <input
           type="checkbox"
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
           disabled={status === "loading"}
-          className="mt-1.5 h-4 w-4 shrink-0 rounded border-white/40 bg-white/10 text-primary focus:ring-2 focus:ring-white/50 focus:ring-offset-0 accent-primary"
-          suppressHydrationWarning
+          className="mt-1.5 h-4 w-4 shrink-0 rounded border-white/40 bg-white/10 accent-primary"
         />
         <span className="text-white/90 text-sm leading-relaxed">
           I agree to receive my exclusive Lakehouse details and occasional updates from Brownstone.
@@ -125,6 +156,7 @@ export default function JettyLeadForm() {
           </a>
         </span>
       </label>
+
       <button
         type="submit"
         disabled={status === "loading"}
@@ -132,7 +164,8 @@ export default function JettyLeadForm() {
       >
         {status === "loading" ? "Sending…" : "Access Exclusive Details"}
       </button>
-      {(status === "error" && message) && (
+
+      {status === "error" && message && (
         <p className="text-red-200 text-sm">{message}</p>
       )}
     </form>
