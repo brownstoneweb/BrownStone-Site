@@ -194,7 +194,7 @@ export default function CelestiaPage() {
                   {[
                     "Floor-to-ceiling panoramic glass",
                     "Smart-home automation ready",
-                    "Lush green corridor"
+                    "Attractive lush green corridor"
                   ].map((item) => (
                     <li key={item} className="flex items-center gap-2 text-sm">
                       <span
