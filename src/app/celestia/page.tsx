@@ -233,8 +233,7 @@ export default function CelestiaPage() {
                 </div>
                 <p className="text-earthy/70 mb-6 leading-relaxed">
                   Bespoke living spaces designed for ultimate privacy and
-                  seclusion. Built directly into the mountain face with river
-                  access.
+                  seclusion with river access.
                 </p>
                 <ul className="space-y-3 mb-8">
                   {[
