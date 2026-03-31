@@ -187,14 +187,14 @@ export default function CelestiaPage() {
                   </span>
                 </div>
                 <p className="text-earthy/70 mb-6 leading-relaxed">
-                  Sophisticated 3-bedroom residences with mountain views and
-                  tiered garden terraces. Designed for the modern family.
+                  Sophisticated 2-bedroom residences with mountain views. 
+                  Designed for the modern family.
                 </p>
                 <ul className="space-y-3 mb-8">
                   {[
                     "Floor-to-ceiling panoramic glass",
-                    "Private rooftop infinity pools",
                     "Smart-home automation ready",
+                    "Lush green corridor"
                   ].map((item) => (
                     <li key={item} className="flex items-center gap-2 text-sm">
                       <span
@@ -239,8 +239,8 @@ export default function CelestiaPage() {
                 <ul className="space-y-3 mb-8">
                   {[
                     "Natural local stone finishes",
-                    "Private boat mooring available",
-                    "Outdoor sunken fire pits",
+                    "Smart EV charging station",
+                    "Luxury interior views",
                   ].map((item) => (
                     <li key={item} className="flex items-center gap-2 text-sm">
                       <span
