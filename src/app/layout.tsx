@@ -3,7 +3,7 @@ import { Manrope, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import ExitIntentDynamic from "@/components/ExitIntentDynamic";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
-import Script from "next/script"; // ✅ ADD THIS
+import Script from "next/script";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -78,14 +78,19 @@ export default async function RootLayout({
     ],
   };
 
-  const heroImageUrl = "https://pub-3e7b2072ee7b4288bdc8a3613d022372.r2.dev/main/lakehouse-wide.webp";
+  const heroImageUrl =
+    "https://pub-3e7b2072ee7b4288bdc8a3613d022372.r2.dev/main/lakehouse-wide.webp";
 
   return (
     <html lang="en" className={`${manrope.variable} ${playfair.variable}`}>
-      
       <head>
         <link rel="preload" as="image" href={heroImageUrl} />
-        <link rel="alternate" type="text/plain" href={`${baseUrl}/llms.txt`} title="llms.txt" />
+        <link
+          rel="alternate"
+          type="text/plain"
+          href={`${baseUrl}/llms.txt`}
+          title="llms.txt"
+        />
 
         {/* GOOGLE TAG MANAGER */}
         <Script id="gtm-script" strategy="afterInteractive">
@@ -100,10 +105,23 @@ export default async function RootLayout({
         </Script>
         {/* END GTM */}
 
+        {/* GOOGLE ADS GLOBAL TAG */}
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=AW-17981782657"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-17981782657');
+          `}
+        </Script>
+        {/* END GOOGLE ADS TAG */}
       </head>
 
       <body className="min-h-screen bg-white text-dark-brown antialiased">
-
         {/* GTM NOSCRIPT */}
         <noscript>
           <iframe

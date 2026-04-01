@@ -3,6 +3,7 @@
 
 import Nav from "@/components/Nav";
 import { FaIcon, IconName } from "@/components/Icons";
+import Link from "next/link";
 import Footer from "@/components/Footer";
 import { useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -335,14 +336,48 @@ export default function MediaGallery() {
         </section>
 
         {/* TOWNHOUSE */}
-        <Slider
-          title="Townhouses - Celestia"
-          description={<p className="font-semibold text-earthy">Modern Comfort for the Discerning Buyer</p>}
-          videoImage="/Night-house.jpg"
-          videoLink="https://www.youtube.com/embed/2_0Qikzkel4"
-          images={images}
-          sliderRef={townhouseRef}
-        />
+        <div id="townhouses" className="mt-32">
+          <Slider
+            title="Townhouses - Celestia"
+            description={<p className="font-semibold text-earthy">Modern Comfort for the Discerning Buyer</p>}
+            videoImage="/Night-house.jpg"
+            videoLink="https://www.youtube.com/embed/2_0Qikzkel4"
+            images={images}
+            sliderRef={townhouseRef}
+          />
+        </div>
+
+      <div className="max-w-3xl mx-auto px-6 text-left mt-5 mb-20">
+  <p className=" mb-6 leading-relaxed">
+    Sophisticated 2-bedroom residences with mountain views.
+    Designed for the modern family.
+  </p>
+
+  <ul className="space-y-3 mb-8 pl-1">
+    {[
+      "Floor-to-ceiling panoramic glass",
+      "Smart-home automation ready",
+      "Attractive lush green corridor",
+    ].map((item) => (
+      <li key={item} className="flex items-start gap-2 text-sm">
+        <span
+          className="material-symbols-outlined text-primary text-xl"
+          style={{ fontFamily: "Material Symbols Outlined" }}
+        >
+          done
+        </span>
+        {item}
+      </li>
+    ))}
+  </ul>
+
+  <Link
+    href="/celestia/townhouses"
+    className="block w-full py-4 border border-earthy/20 rounded-lg font-bold hover:bg-earthy hover:text-white transition-all text-center"
+  >
+    Explore Details
+  </Link>
+</div>
 
         {/* CHALET */}
         <Slider
@@ -353,6 +388,36 @@ export default function MediaGallery() {
           images={images1}
           sliderRef={chaletRef}
         />
+<div className="max-w-3xl mx-auto px-6 text-left mt-5 mb-20">
+  <p className=" mb-6 leading-relaxed">
+    Bespoke living spaces designed for ultimate privacy and seclusion with river access.
+  </p>
+
+  <ul className="space-y-3 mb-8 pl-1">
+    {[
+      "Natural local stone finishes",
+      "Smart EV charging station",
+      "Luxury interior views",
+    ].map((item) => (
+      <li key={item} className="flex items-start gap-2 text-sm">
+        <span
+          className="material-symbols-outlined text-primary text-xl"
+          style={{ fontFamily: "Material Symbols Outlined" }}
+        >
+          done
+        </span>
+        {item}
+      </li>
+    ))}
+  </ul>
+
+  <Link
+    href="/celestia/chalets"
+    className="block w-full py-4 border border-earthy/20 rounded-lg font-bold hover:bg-earthy hover:text-white transition-all text-center"
+  >
+    Explore Details
+  </Link>
+</div>
 
         {/* LAKEHOUSE */}
         <Slider

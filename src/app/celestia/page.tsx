@@ -63,16 +63,16 @@ export default function CelestiaPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="#residences"
+              href="/media#townhouses"
               className="bg-primary text-white px-10 py-4 rounded-lg font-bold text-lg hover:shadow-2xl transition-all text-center"
             >
               View Residences
             </a>
             <a
-              href="#lakehouse"
+              href="#viewing"
               className="bg-white/10 backdrop-blur-md border border-white/30 text-white px-10 py-4 rounded-lg font-bold text-lg hover:bg-white/20 transition-all text-center"
             >
-              Discover the Lakehouse
+              Get in touch
             </a>
           </div>
         </div>
@@ -355,24 +355,39 @@ export default function CelestiaPage() {
           </div>
         </div>
       </section>
-
       {/* CTA */}
-      <section className="py-24 px-6 text-center bg-white">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="text-4xl md:text-6xl font-medium mb-8">
-            Secure Your Piece of Peace
-          </h2>
-          <p className="text-earthy/60 text-lg mb-12">
-            Reservations are now open for Phase 1. Enter your email to receive
-            the property brochure and full prospectus.
-          </p>
-          <BrochureForm project="celestia" variant="compact" />
-          <p className="mt-6 text-xs text-earthy/40 uppercase tracking-widest">
-            A Brownstone Construction Development
-          </p>
-        </div>
-      </section>
-
+      <section
+              id="viewing"
+              className="relative w-full flex flex-col justify-center items-center overflow-hidden bg-earthy text-white py-20 lg:py-28 px-6"
+            >
+              <div className="absolute inset-0 z-0 opacity-20">
+                <div
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${assetUrl("celestia-townhouse-LIVING-AREA3.webp")})` }}
+                />
+              </div>
+              <div className="relative z-10 text-center max-w-2xl mx-auto">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-semibold leading-tight mb-4">
+                  Secure Your Private Viewing
+                </h2>
+                <p className="text-white/85 text-lg font-light leading-relaxed mb-6">
+                  Receive the Celestia Townhouses Brochure by email. <br />Contact us to arrange your private viewing.
+                </p>
+                <div className="w-full max-w-md mx-auto mb-10">
+                  <BrochureForm
+                    project="townhouse"
+                    successMessage="Thank you for your interest. We've sent the Celestia Townhouses Brochure to your email."
+                    className="[&_input]:bg-white/10 [&_input]:border-white/30 [&_input]:text-white [&_input]:placeholder:text-white/60 [&_label]:text-white/90 [&_a]:text-primary [&_button]:border [&_button]:border-white/40 [&_button]:bg-transparent [&_button]:text-white [&_button:hover]:bg-white [&_button:hover]:text-earthy"
+                  />
+                </div>
+                <Link
+                  href="/contact?interest=townhouses"
+                  className="inline-flex items-center justify-center bg-primary text-white px-10 py-4 rounded-lg font-bold text-sm uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg"
+                >
+                  Get in Touch
+                </Link>
+              </div>
+            </section>
       <Footer />
     </div>
   );
