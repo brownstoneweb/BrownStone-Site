@@ -15,6 +15,8 @@ import {
   Line,
 } from "recharts";
 
+import { ValueType, NameType } from "recharts/types/component/DefaultTooltipContent";
+
 const STATUS_COLORS: Record<string, string> = {
   new_lead: "#f59e0b",
   contacted: "#3b82f6",
@@ -38,6 +40,20 @@ const STATUS_LABELS: Record<string, string> = {
 type PipelineData = { status: string; label: string; count: number };
 type TimeSeriesData = { date: string; contacts: number };
 type SourceData = { source: string; count: number };
+
+/**
+ * Reusable formatter for all charts
+ */
+const formatContacts = (value: ValueType, _name: NameType) => {
+  const num =
+    typeof value === "number"
+      ? value
+      : Array.isArray(value)
+      ? Number(value[0])
+      : Number(value);
+
+  return [num || 0, "Contacts"] as [number, string];
+};
 
 export function AnalyticsCharts({
   pipelineData,
@@ -83,7 +99,7 @@ export function AnalyticsCharts({
                   border: "1px solid #e2e8f0",
                   borderRadius: "8px",
                 }}
-                formatter={(value: number | undefined) => [value ?? 0, "Contacts"]}
+                formatter={formatContacts}
                 labelFormatter={(label) => label}
               />
               <Bar dataKey="count" radius={[0, 4, 4, 0]} />
@@ -111,12 +127,16 @@ export function AnalyticsCharts({
                   outerRadius={90}
                   paddingAngle={2}
                   label={({ name, percent }: { name?: string; percent?: number }) =>
-                    (percent ?? 0) > 0.05 ? `${name ?? ""} (${((percent ?? 0) * 100).toFixed(0)}%)` : ""
+                    (percent ?? 0) > 0.05
+                      ? `${name ?? ""} (${((percent ?? 0) * 100).toFixed(0)}%)`
+                      : ""
                   }
                 >
-                  {pipelineChartData.filter((d) => d.count > 0).map((entry) => (
-                    <Cell key={entry.status} fill={entry.fill} />
-                  ))}
+                  {pipelineChartData
+                    .filter((d) => d.count > 0)
+                    .map((entry) => (
+                      <Cell key={entry.status} fill={entry.fill} />
+                    ))}
                 </Pie>
                 <Tooltip
                   contentStyle={{
@@ -124,10 +144,19 @@ export function AnalyticsCharts({
                     border: "1px solid #e2e8f0",
                     borderRadius: "8px",
                   }}
-                  formatter={(value: number | undefined, name?: string) => [
-                    value ?? 0,
-                    `${name ?? ""} (${value ?? 0} contacts)`,
-                  ]}
+                  formatter={(value: ValueType, name: NameType) => {
+                    const num =
+                      typeof value === "number"
+                        ? value
+                        : Array.isArray(value)
+                        ? Number(value[0])
+                        : Number(value);
+
+                    return [
+                      num || 0,
+                      `${name ?? ""} (${num || 0} contacts)`,
+                    ] as [number, string];
+                  }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -162,7 +191,7 @@ export function AnalyticsCharts({
                     border: "1px solid #e2e8f0",
                     borderRadius: "8px",
                   }}
-                  formatter={(value: number | undefined) => [value ?? 0, "Contacts"]}
+                  formatter={formatContacts}
                   labelFormatter={(label) =>
                     new Date(label).toLocaleDateString(undefined, {
                       weekday: "short",
@@ -204,7 +233,9 @@ export function AnalyticsCharts({
                   stroke="#64748b"
                   fontSize={12}
                   tickFormatter={(v: string) =>
-                    v.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())
+                    v
+                      .replace(/_/g, " ")
+                      .replace(/\b\w/g, (c: string) => c.toUpperCase())
                   }
                 />
                 <YAxis stroke="#64748b" fontSize={12} />
@@ -214,7 +245,7 @@ export function AnalyticsCharts({
                     border: "1px solid #e2e8f0",
                     borderRadius: "8px",
                   }}
-                  formatter={(value: number | undefined) => [value ?? 0, "Contacts"]}
+                  formatter={formatContacts}
                 />
                 <Bar
                   dataKey="count"
