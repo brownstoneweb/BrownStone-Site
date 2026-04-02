@@ -1,6 +1,6 @@
 import type { RouteObject } from "react-router-dom";
 import NotFound from "../NotFound";
-import Home from "../home/page";
+import Home from "../app/celestia/page";
 
 const routes: RouteObject[] = [
   {
