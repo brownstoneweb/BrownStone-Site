@@ -27,7 +27,7 @@ export default function FormSection() {
         <div className="reveal-on-scroll">
           <span className="eyebrow-text block mb-3 text-[#C3C3C3]">Get the Full Prospectus</span>
           <h2 className="font-serif-luxury text-white leading-tight mb-3" style={{ fontSize: 'clamp(1.8rem, 4vw, 2.7rem)', fontWeight: 300 }}>
-            Receive the Investment<br /><em className="italic text-gold">Brochure — Free</em>
+            Receive the Investment Brochure
           </h2>
           <p className="text-[#C3C3C3] text-sm leading-relaxed">
             Floor plans, unit availability, pricing, and investment projections — delivered directly to you.

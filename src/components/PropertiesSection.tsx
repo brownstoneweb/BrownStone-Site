@@ -5,7 +5,7 @@ export default function PropertiesSection() {
       <div className="text-center px-6 mb-16 reveal-on-scroll">
         <span className="eyebrow-text block mb-3">The Collection</span>
         <h2 className="font-serif-luxury text-[#d6d6d6] leading-tight mb-4" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 300 }}>
-          Three <em className="italic text-gold">Distinct</em> Residences.<br />One Standard of Perfection.
+          Three Distinct Residences.<br />One Standard of Perfection.
         </h2>
         <p className="text-luxury-mist text-sm leading-relaxed max-w-lg mx-auto">
           Every unit is a self-contained world — designed with precision, built with intention, delivered with the BrownStone guarantee.
@@ -26,7 +26,7 @@ export default function PropertiesSection() {
           <span className="font-serif-luxury text-gold/10 leading-none block mb-[-0.6rem]" style={{ fontSize: '5.5rem', fontWeight: 300 }}>01</span>
           <span className="eyebrow-text block mb-3">Terraced Townhomes</span>
           <h3 className="font-serif-luxury text-[#d6d6d6] mb-3 leading-tight" style={{ fontSize: '2.4rem', fontWeight: 300 }}>
-            Celestia<br /><em className="italic text-gold">Townhouses</em>
+            Celestia<br />Townhouses
           </h3>
           <p className="text-luxury-mist text-sm leading-relaxed mb-6">
             Sophisticated 2-bedroom residences perched on tiered terraces with unobstructed mountain panoramas. Every room is designed around the view — and the view never disappoints.
@@ -51,7 +51,7 @@ export default function PropertiesSection() {
           <div className="absolute bottom-0 left-0 right-0 p-8 lg:p-10">
             <span className="font-serif-luxury text-white leading-none block mb-[-0.3rem]" style={{ fontSize: '3rem', fontWeight: 300 }}>02</span>
             <span className="eyebrow-text block mb-2 text-white">Private Chalets</span>
-            <h3 className="font-serif-luxury text-[#c3c3c3] mb-2 leading-tight" style={{ fontSize: '2rem', fontWeight: 300 }}>Celestia<br /><em className="italic text-[#c3c3c3]">Chalets</em></h3>
+            <h3 className="font-serif-luxury text-[#c3c3c3] mb-2 leading-tight" style={{ fontSize: '2rem', fontWeight: 300 }}>Celestia<br />Chalets</h3>
             <p className="text-white text-xs leading-relaxed mb-4">Built into the mountain face. Bespoke seclusion, river access, natural stone finishes, sunken fire pits.</p>
             <div className="flex flex-wrap gap-2 mb-4">
               {['Natural stone', 'Smart EV charging station', 'Luxury interior views'].map((t) => (
@@ -68,7 +68,7 @@ export default function PropertiesSection() {
           <div className="absolute bottom-0 left-0 right-0 p-8 lg:p-10">
             <span className="font-serif-luxury text-white leading-none block mb-[-0.3rem]" style={{ fontSize: '3rem', fontWeight: 300 }}>03</span>
             <span className="eyebrow-text block mb-2 text-white">The Social Core</span>
-            <h3 className="font-serif-luxury text-[#c3c3c3] mb-2 leading-tight" style={{ fontSize: '2rem', fontWeight: 300 }}>The<br /><em className="italic text-gold">Lakehouse</em></h3>
+            <h3 className="font-serif-luxury text-[#c3c3c3] mb-2 leading-tight" style={{ fontSize: '2rem', fontWeight: 300 }}>The<br />Lakehouse</h3>
             <p className="text-white text-xs leading-relaxed mb-4">Elite gym, thermal spa, executive deep-work hub — the communal heartbeat of Celestia, overlooking the Volta.</p>
             <div className="flex flex-wrap gap-2 mb-4 text-white">
               {['Thermal spa', 'Elite gym', 'Work hub'].map((t) => (

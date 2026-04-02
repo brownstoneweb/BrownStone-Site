@@ -31,9 +31,9 @@ export default function HeroSection() {
         </div>
 
         {/* Headline */}
-        <h1 className="anim-fadeup-2 font-serif-luxury text-white leading-[1.05] mb-5" style={{ fontSize: 'clamp(3.2rem, 7.5vw, 6.8rem)', fontWeight: 300 }}>
+        <h1 className="anim-fadeup-2 font-serif-luxury text-white leading-[1.05] mb-5" style={{ fontSize: 'clamp(3.2rem, 7.5vw, 6.8rem)', fontWeight: 500 }}>
           Where Luxury<br />Finds Its{' '}
-          <em className="block italic text-gold">True Landscape</em>
+          <br />True Landscape
         </h1>
 
         {/* Subtext */}

@@ -21,7 +21,7 @@ export default function LocationSection() {
         <div className="bg-luxury-stone px-10 py-16 lg:px-20 lg:py-24 flex flex-col justify-center reveal-on-scroll reveal-delay-2">
           <span className="eyebrow-text block mb-3">Location Intelligence</span>
           <h2 className="font-serif-luxury text-[#c3c3c3] leading-tight mb-6" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 300 }}>
-            Leave the Noise.<br /><em className="italic text-gold">Keep the Returns.</em>
+            Leave the Noise.<br />Keep the Returns.
           </h2>
           <p className="text-luxury-mist text-sm leading-relaxed mb-4">
             Akosombo sits at the convergence of Ghana&apos;s most dramatic landscape — the Volta River basin, dense forest canopies, and mountain ridgelines. Just 90 minutes from Accra&apos;s business district, Celestia delivers genuine seclusion without sacrificing proximity to the capital.
