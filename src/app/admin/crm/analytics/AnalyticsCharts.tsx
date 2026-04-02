@@ -27,24 +27,17 @@ const STATUS_COLORS: Record<string, string> = {
   dormant: "#94a3b8",
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  new_lead: "New lead",
-  contacted: "Contacted",
-  engaged: "Engaged",
-  qualified: "Qualified",
-  negotiation: "Negotiation",
-  converted: "Converted",
-  dormant: "Dormant",
-};
-
 type PipelineData = { status: string; label: string; count: number };
 type TimeSeriesData = { date: string; contacts: number };
 type SourceData = { source: string; count: number };
 
 /**
- * Reusable formatter for all charts
+ * FINAL formatter (Recharts-safe)
  */
-const formatContacts = (value: ValueType, _name: NameType) => {
+const formatContacts = ((
+  value: ValueType | undefined,
+  _name: NameType
+) => {
   const num =
     typeof value === "number"
       ? value
@@ -53,7 +46,7 @@ const formatContacts = (value: ValueType, _name: NameType) => {
       : Number(value);
 
   return [num || 0, "Contacts"] as [number, string];
-};
+}) as any;
 
 export function AnalyticsCharts({
   pipelineData,
@@ -144,7 +137,7 @@ export function AnalyticsCharts({
                     border: "1px solid #e2e8f0",
                     borderRadius: "8px",
                   }}
-                  formatter={(value: ValueType, name: NameType) => {
+                  formatter={(value: ValueType | undefined, name: NameType) => {
                     const num =
                       typeof value === "number"
                         ? value
