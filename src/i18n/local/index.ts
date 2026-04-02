@@ -1,4 +1,5 @@
-const modules = import.meta.glob('./*/*.ts', { eager: true });
+// @ts-ignore - import.meta.glob is a Vite feature
+const modules = import.meta.glob('./*/*.ts', { eager: true }) as Record<string, { default?: Record<string, string> }>;
 
 const messages: Record<string, { translation: Record<string, string> }> = {};
 
