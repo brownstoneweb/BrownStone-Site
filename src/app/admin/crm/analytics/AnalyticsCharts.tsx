@@ -15,8 +15,6 @@ import {
   Line,
 } from "recharts";
 
-import { ValueType, NameType } from "recharts/types/component/DefaultTooltipContent";
-
 const STATUS_COLORS: Record<string, string> = {
   new_lead: "#f59e0b",
   contacted: "#3b82f6",
@@ -32,12 +30,9 @@ type TimeSeriesData = { date: string; contacts: number };
 type SourceData = { source: string; count: number };
 
 /**
- * FINAL formatter (Recharts-safe)
+ * GLOBAL formatter (safe for all charts)
  */
-const formatContacts = ((
-  value: ValueType | undefined,
-  _name: NameType
-) => {
+const formatContacts = ((value: any) => {
   const num =
     typeof value === "number"
       ? value
@@ -45,7 +40,21 @@ const formatContacts = ((
       ? Number(value[0])
       : Number(value);
 
-  return [num || 0, "Contacts"] as [number, string];
+  return [num || 0, "Contacts"];
+}) as any;
+
+/**
+ * Pie formatter (needs name)
+ */
+const pieFormatter = ((value: any, name: any) => {
+  const num =
+    typeof value === "number"
+      ? value
+      : Array.isArray(value)
+      ? Number(value[0])
+      : Number(value);
+
+  return [num || 0, `${name ?? ""} (${num || 0} contacts)`];
 }) as any;
 
 export function AnalyticsCharts({
@@ -137,19 +146,7 @@ export function AnalyticsCharts({
                     border: "1px solid #e2e8f0",
                     borderRadius: "8px",
                   }}
-                  formatter={(value: ValueType | undefined, name: NameType) => {
-                    const num =
-                      typeof value === "number"
-                        ? value
-                        : Array.isArray(value)
-                        ? Number(value[0])
-                        : Number(value);
-
-                    return [
-                      num || 0,
-                      `${name ?? ""} (${num || 0} contacts)`,
-                    ] as [number, string];
-                  }}
+                  formatter={pieFormatter}
                 />
               </PieChart>
             </ResponsiveContainer>
