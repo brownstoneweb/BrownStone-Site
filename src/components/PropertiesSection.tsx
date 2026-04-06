@@ -52,7 +52,7 @@ export default function PropertiesSection() {
             <span className="font-serif-luxury text-white leading-none block mb-[-0.3rem]" style={{ fontSize: '3rem', fontWeight: 300 }}>02</span>
             <span className="eyebrow-text block mb-2 text-white">Private Chalets</span>
             <h3 className="font-serif-luxury text-[#c3c3c3] mb-2 leading-tight" style={{ fontSize: '2rem', fontWeight: 300 }}>Celestia<br />Chalets</h3>
-            <p className="text-white text-xs leading-relaxed mb-4">Built into the mountain face. Bespoke seclusion, river access, natural stone finishes, sunken fire pits.</p>
+            <p className="text-white text-xs leading-relaxed mb-4">Built for bespoke seclusion, river access, natural stone finishes.</p>
             <div className="flex flex-wrap gap-2 mb-4">
               {['Natural stone', 'Smart EV charging station', 'Luxury interior views'].map((t) => (
                 <span key={t} className="text-[0.58rem] tracking-wide uppercase px-3 py-1 border border-gold/30 text-white" style={{ background: 'rgba(201,168,76,0.08)' }}>{t}</span>
