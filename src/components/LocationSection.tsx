@@ -32,7 +32,7 @@ export default function LocationSection() {
 
           <div className="grid grid-cols-2 gap-3 mt-10 text-white">
             {[
-              { num: '90min', label: 'From Accra CBD' },
+              { num: '90min', label: 'From Accra' },
               { num: 'Volta', label: 'River Access' },
               { num: 'Forest', label: 'Mountain Air' },
               { num: 'Phase 1', label: 'Now Open' },
