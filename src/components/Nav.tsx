@@ -19,7 +19,7 @@ const navLinks: Array<
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
   { href: "/portfolio", label: "Projects" },
-  { label: "Properties", items: propertyLinks },
+  //{ label: "Properties", items: propertyLinks },
   { href: "/blog", label: "Blog" },
   { href: "/media", label: "Media" },
 ];

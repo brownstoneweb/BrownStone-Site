@@ -31,7 +31,7 @@ export default function LakehousePage() {
           <div
             className="absolute inset-0 bg-cover bg-center scale-105 transition-transform duration-[1.2s] ease-out"
             style={{
-              backgroundImage: `url(${assetUrl("lakehouse/lakehouse_frontview.webp")})`,
+              backgroundImage: `url(/lake7.jpg)`,
             }}
           />
           <div

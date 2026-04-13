@@ -173,6 +173,31 @@ function PortfolioContent() {
             ))}
           </div>
 
+          {activeTab === "celestia" && (
+            <div className="mt-12 text-center mb-10">
+              <div className="flex flex-wrap gap-9 mt-6 justify-start">
+                <Link
+                  href="/celestia/townhouses"
+                  className="inline-flex w-fit items-center justify-center rounded-full bg-primary text-white px-3 py-2 text-sm font-bold tracking-wider hover:bg-primary/90 transition-all"
+                >
+                  Townhouses
+                </Link>
+                <Link
+                  href="/celestia/chalets"
+                  className="inline-flex w-fit items-center justify-center rounded-full bg-primary text-white px-3 py-2 text-sm font-bold tracking-wider hover:bg-primary/90 transition-all"
+                >
+                  Chalets
+                </Link>
+                <Link
+                  href="/celestia/lakehouse"
+                  className="inline-flex w-fit items-center justify-center rounded-full bg-primary text-white px-3 py-2 text-sm font-bold tracking-wider hover:bg-primary/90 transition-all"
+                >
+                  Lakehouse
+                </Link>
+              </div>
+            </div>
+          )}
+
           <div
             className="columns-1 sm:columns-2 md:columns-3 gap-6"
             style={{ columnGap: "1.5rem" }}
