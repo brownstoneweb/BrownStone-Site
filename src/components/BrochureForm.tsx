@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useRecaptcha } from "@/hooks/useRecaptcha";
 import { HONEYPOT_FIELD } from "@/lib/recaptcha";
 
-export type BrochureProject = "celestia" | "townhouse" | "lakehouse";
+export type BrochureProject = "celestia" | "townhouse" | "lakehouse" | "chalets";
 
 type Props = {
   project?: BrochureProject;
