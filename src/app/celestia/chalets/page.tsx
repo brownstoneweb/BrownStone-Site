@@ -330,7 +330,7 @@ export default function ChaletsPage() {
           </p>
           <div className="w-full max-w-md mx-auto mb-10">
             <BrochureForm
-              project="chalet"
+              project="chalets"
               successMessage="Thank you for your interest. A member of our exclusive services team will contact you shortly to arrange your private viewing."
               className="[&_input]:bg-white/10 [&_input]:border-white/30 [&_input]:text-white [&_input]:placeholder:text-white/60 [&_label]:text-white/90 [&_a]:text-primary [&_button]:border [&_button]:border-white/40 [&_button]:bg-transparent [&_button]:text-white [&_button:hover]:bg-white [&_button:hover]:text-earthy"
             />
