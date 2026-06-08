@@ -66,11 +66,8 @@ export default function Home() {
           className="h-30 sm:h-30 w-10/12"
         />
       </a>
-        <img
-          src="/line.png"
-          alt="Celestia"
-          className="h-16 sm:h-16 w-14"
-        />
+        
+
       <a
         href="/properties/israel-de-maison"
         target="_blank"
@@ -83,11 +80,9 @@ export default function Home() {
           className="h-30 sm:h-30 w-10/12"
         />
       </a>
-      <img
-          src="/line.png"
-          alt="Celestia"
-          className="h-16 sm:h-16 w-14"
-        />
+      
+
+
       <a
         href="/properties/izzy-villa"
         target="_blank"
@@ -100,11 +95,10 @@ export default function Home() {
           className="h-30 sm:h-30 w-10/12"
         />
       </a>
-      <img
-          src="/line.png"
-          alt="Celestia"
-          className="h-16 sm:h-16 w-14"
-        />
+      
+
+
+      
       <a
         href="/properties/wilma-crescent"
         target="_blank"
@@ -223,7 +217,7 @@ export default function Home() {
                 </p>
               </div>
               
-              
+
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
               {[
