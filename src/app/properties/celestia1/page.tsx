@@ -321,7 +321,7 @@ export default function MediaGallery() {
         {/* HERO */}
         <section className="relative min-h-[70vh] flex items-center justify-center text-center">
           <div
-            className="absolute inset-0 bg-cover bg-center"
+            className="absolute inset-0 bg-cover bg-bottom"
             style={{
               backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/plan4.jpg')`,
             }}
