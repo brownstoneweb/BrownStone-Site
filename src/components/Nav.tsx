@@ -5,14 +5,26 @@ import Link from "next/link";
 import Image from "next/image";
 import { FaIcon } from "@/components/Icons";
 
-const projectLinks = [
+type NavLink = {
+  href: string;
+  label: string;
+};
+
+type NavDropdown = {
+  label: string;
+  children: NavLink[];
+};
+
+type NavItem = NavLink | NavDropdown;
+
+const projectLinks: NavLink[] = [
   { href: "/properties/celestia1", label: "Celestia" },
   { href: "/properties/israel-de-maison", label: "Israel De Maison" },
   { href: "/properties/wilma-crescent", label: "Wilma Crescent" },
   { href: "/properties/izzy-villa", label: "Izzy Villa" },
 ];
 
-const navLinks = [
+const navLinks: NavItem[] = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
@@ -23,6 +35,10 @@ const navLinks = [
   },
   { href: "/blog", label: "Blog" },
 ];
+
+const hasChildren = (item: NavItem): item is NavDropdown => {
+  return "children" in item;
+};
 
 export type NavVariant = "solid" | "transparent";
 
@@ -92,7 +108,7 @@ export default function Nav({
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8 lg:gap-10">
           {navLinks.map((item) => {
-            if ("children" in item) {
+            if (hasChildren(item)) {
               return (
                 <div key={item.label} className="relative group">
                   <button
@@ -192,7 +208,7 @@ export default function Nav({
         >
           <div className="px-4 py-6 space-y-1 max-h-[calc(100vh-5rem)] overflow-y-auto">
             {navLinks.map((item) => {
-              if ("children" in item) {
+              if (hasChildren(item)) {
                 return (
                   <div
                     key={item.label}
@@ -206,9 +222,7 @@ export default function Nav({
                       className="w-full flex items-center justify-between py-4 text-sm font-semibold uppercase tracking-wider text-earthy"
                     >
                       <span>{item.label}</span>
-                      <span>
-                        {mobileDropdownOpen ? "−" : "+"}
-                      </span>
+                      <span>{mobileDropdownOpen ? "−" : "+"}</span>
                     </button>
 
                     {mobileDropdownOpen && (
