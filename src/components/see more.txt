@@ -1,0 +1,32 @@
+<Link
+                href="/portfolio"
+                className="flex items-center gap-2 font-bold uppercase tracking-widest text-xs border-b-2 border-primary pb-2 hover:text-primary transition-all w-fit"
+              >
+                View All Projects
+              </Link>
+
+
+
+
+
+              <img
+          src="/line.png"
+          alt="Celestia"
+          className="h-16 sm:h-16 w-14"
+        />
+
+
+
+        <img
+          src="/line.png"
+          alt="Celestia"
+          className="h-16 sm:h-16 w-14"
+        />
+
+
+
+        <img
+          src="/line.png"
+          alt="Celestia"
+          className="h-16 sm:h-16 w-14"
+        />
