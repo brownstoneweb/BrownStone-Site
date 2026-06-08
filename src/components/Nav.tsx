@@ -5,23 +5,23 @@ import Link from "next/link";
 import Image from "next/image";
 import { FaIcon } from "@/components/Icons";
 
-const propertyLinks = [
-  { href: "/celestia/townhouses", label: "Celestia Townhouses" },
-  { href: "/celestia/lakehouse", label: "Celestia Lakehouse" },
-  { href: "/celestia/chalets", label: "Celestia Chalets" },
+const projectLinks = [
+  { href: "/properties/celestia1", label: "Celestia" },
+  { href: "/properties/israel-de-maison", label: "Israel De Maison" },
+  { href: "/properties/wilma-crescent", label: "Wilma Crescent" },
+  { href: "/properties/izzy-villa", label: "Izzy Villa" },
 ];
 
-const navLinks: Array<
-  | { href: string; label: string }
-  | { label: string; items: typeof propertyLinks }
-> = [
+const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
-  { href: "/portfolio", label: "Projects" },
-  //{ label: "Properties", items: propertyLinks },
+  { href: "/events", label: "Events" },
+  {
+    label: "Projects",
+    children: projectLinks,
+  },
   { href: "/blog", label: "Blog" },
-  { href: "/media", label: "Media" },
 ];
 
 export type NavVariant = "solid" | "transparent";
@@ -31,28 +31,39 @@ type NavProps = {
   variant?: NavVariant;
 };
 
-export default function Nav({ activePath = "/", variant = "solid" }: NavProps) {
+export default function Nav({
+  activePath = "/",
+  variant = "solid",
+}: NavProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
+
   const isTransparent = variant === "transparent";
 
   useEffect(() => {
-    if (mobileOpen) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [mobileOpen]);
 
   const linkClass = (href: string) => {
-    const base = "text-sm font-semibold uppercase tracking-wider transition-colors py-4 md:py-0";
+    const base =
+      "text-sm font-semibold uppercase tracking-wider transition-colors py-4 md:py-0";
+
     const active = href === activePath ? "text-primary" : "";
+
     if (isTransparent) {
       return `${base} text-white hover:text-primary ${active}`;
     }
+
     return `${base} text-earthy hover:text-primary ${active}`;
   };
-
-  const isPropertiesActive = propertyLinks.some((item) => item.href === activePath);
-  const dropdownTriggerClass = `text-sm font-semibold uppercase tracking-wider transition-colors py-4 md:py-0 flex items-center gap-1 ${
-    isTransparent ? "text-white hover:text-primary" : "text-earthy hover:text-primary"
-  } ${isPropertiesActive ? "text-primary" : ""}`;
 
   return (
     <header
@@ -63,7 +74,11 @@ export default function Nav({ activePath = "/", variant = "solid" }: NavProps) {
       }`}
     >
       <div className="max-w-7xl mx-auto h-14 sm:h-16 md:h-20 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 shrink-0 ml-4 md:ml-0">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="flex items-center gap-3 shrink-0 ml-4 md:ml-0"
+        >
           <Image
             src="/BrownStone.png"
             alt="Brownstone Construction Limited"
@@ -73,40 +88,62 @@ export default function Nav({ activePath = "/", variant = "solid" }: NavProps) {
             priority
           />
         </Link>
+
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8 lg:gap-10">
           {navLinks.map((item) => {
-            if ("href" in item) {
+            if ("children" in item) {
               return (
-                <Link key={item.href} href={item.href} className={linkClass(item.href)}>
-                  {item.label}
-                </Link>
-              );
-            }
-            return (
-              <div key={item.label} className="relative group">
-                <span className={dropdownTriggerClass} role="button" aria-haspopup="true" aria-expanded="false">
-                  {item.label}
-                  <FaIcon name="chevronDown" className="text-[0.65rem] opacity-80" />
-                </span>
-                <div className="absolute left-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
-                  <div className="bg-white border border-earthy/10 rounded-lg shadow-lg py-1 min-w-[200px]">
-                    {item.items.map((sub) => (
-                      <Link
-                        key={sub.href}
-                        href={sub.href}
-                        className={`block px-4 py-2.5 text-sm font-semibold uppercase tracking-wider ${
-                          sub.href === activePath ? "text-primary bg-primary/5" : "text-earthy hover:bg-earthy/5 hover:text-primary"
-                        }`}
-                      >
-                        {sub.label}
-                      </Link>
-                    ))}
+                <div key={item.label} className="relative group">
+                  <button
+                    type="button"
+                    className={`text-sm font-semibold uppercase tracking-wider transition-colors flex items-center gap-1 ${
+                      isTransparent
+                        ? "text-white hover:text-primary"
+                        : "text-earthy hover:text-primary"
+                    }`}
+                  >
+                    {item.label}
+                    <FaIcon
+                      name="chevronDown"
+                      className="text-[0.65rem] opacity-80"
+                    />
+                  </button>
+
+                  <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="w-64 bg-white rounded-lg shadow-xl border border-earthy/10 overflow-hidden">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          className={`block px-5 py-3 text-sm font-semibold uppercase tracking-wider transition-colors ${
+                            child.href === activePath
+                              ? "text-primary bg-primary/5"
+                              : "text-earthy hover:bg-earthy/5 hover:text-primary"
+                          }`}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              );
+            }
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={linkClass(item.href)}
+              >
+                {item.label}
+              </Link>
             );
           })}
         </nav>
+
+        {/* Right Side */}
         <div className="flex items-center gap-2 sm:gap-4">
           <Link
             href="/contact"
@@ -114,20 +151,27 @@ export default function Nav({ activePath = "/", variant = "solid" }: NavProps) {
           >
             Contact Us
           </Link>
+
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden size-12 flex items-center justify-center rounded-lg text-earthy hover:bg-earthy/5 transition-colors touch-manipulation"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
           >
-            <span className="inline-flex items-center justify-center size-6 shrink-0" aria-hidden>
-              <FaIcon name={mobileOpen ? "xmark" : "bars"} className="w-full h-full" />
+            <span
+              className="inline-flex items-center justify-center size-6 shrink-0"
+              aria-hidden
+            >
+              <FaIcon
+                name={mobileOpen ? "xmark" : "bars"}
+                className="w-full h-full"
+              />
             </span>
           </button>
         </div>
       </div>
 
-      {/* Mobile menu overlay */}
+      {/* Mobile Menu Overlay */}
       <div
         className={`fixed inset-0 z-40 md:hidden transition-opacity duration-300 ${
           mobileOpen ? "opacity-100 visible" : "opacity-0 invisible"
@@ -140,47 +184,72 @@ export default function Nav({ activePath = "/", variant = "solid" }: NavProps) {
           onClick={() => setMobileOpen(false)}
           aria-label="Close menu"
         />
+
         <nav
           className={`absolute top-full left-0 right-0 bg-white border-t border-earthy/10 shadow-xl transition-transform duration-300 ease-out ${
             mobileOpen ? "translate-y-0" : "-translate-y-2"
           }`}
         >
-          <div className="px-4 py-6 space-y-1 max-h-[calc(100vh-5rem)] overflow-y-auto safe-area-pb">
+          <div className="px-4 py-6 space-y-1 max-h-[calc(100vh-5rem)] overflow-y-auto">
             {navLinks.map((item) => {
-              if ("href" in item) {
+              if ("children" in item) {
                 return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileOpen(false)}
-                    className={`block ${linkClass(item.href)} border-b border-earthy/5`}
+                  <div
+                    key={item.label}
+                    className="border-b border-earthy/5 pb-2"
                   >
-                    {item.label}
-                  </Link>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setMobileDropdownOpen(!mobileDropdownOpen)
+                      }
+                      className="w-full flex items-center justify-between py-4 text-sm font-semibold uppercase tracking-wider text-earthy"
+                    >
+                      <span>{item.label}</span>
+                      <span>
+                        {mobileDropdownOpen ? "−" : "+"}
+                      </span>
+                    </button>
+
+                    {mobileDropdownOpen && (
+                      <div className="pl-4 space-y-1">
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            onClick={() => {
+                              setMobileOpen(false);
+                              setMobileDropdownOpen(false);
+                            }}
+                            className={`block py-2.5 text-sm font-semibold uppercase tracking-wider ${
+                              child.href === activePath
+                                ? "text-primary"
+                                : "text-earthy hover:text-primary"
+                            }`}
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 );
               }
+
               return (
-                <div key={item.label} className="border-b border-earthy/5 pb-2">
-                  <span className={`block ${dropdownTriggerClass} py-4`}>
-                    {item.label}
-                  </span>
-                  <div className="pl-3 space-y-1">
-                    {item.items.map((sub) => (
-                      <Link
-                        key={sub.href}
-                        href={sub.href}
-                        onClick={() => setMobileOpen(false)}
-                        className={`block py-2.5 text-sm font-semibold uppercase tracking-wider ${
-                          sub.href === activePath ? "text-primary" : "text-earthy hover:text-primary"
-                        }`}
-                      >
-                        {sub.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={`block ${linkClass(
+                    item.href
+                  )} border-b border-earthy/5`}
+                >
+                  {item.label}
+                </Link>
               );
             })}
+
             <Link
               href="/contact"
               onClick={() => setMobileOpen(false)}

@@ -58,7 +58,7 @@ export default function ChaletsPage() {
       <Nav activePath="/celestia/chalets" />
 
       {/* Hero — Exclusive Sanctuary */}
-      <section className="relative min-h-[100svh] min-h-[600px] sm:min-h-[700px] h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden">
+      <section className="relative min-h-[100svh] sm:min-h-[700px] h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0 bg-cover bg-center scale-105 transition-transform duration-[1.2s] ease-out"

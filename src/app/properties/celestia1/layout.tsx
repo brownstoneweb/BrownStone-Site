@@ -1,5 +1,5 @@
 import { Newsreader } from "next/font/google";
-import { MaterialSymbolsFont } from "./MaterialSymbolsFont";
+import { MaterialSymbolsFont } from "../../celestia/MaterialSymbolsFont";
 
 const newsreader = Newsreader({
   subsets: ["latin"],

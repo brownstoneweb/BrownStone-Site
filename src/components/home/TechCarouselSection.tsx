@@ -10,7 +10,6 @@ const CAROUSEL_IMAGES = [
   { src: "/WhatsApp-3.jpeg", alt: "Brownstone sustainable infrastructure" },
   { src: "/WhatsApp-4.jpeg", alt: "Brownstone intelligent building systems" },
   { src: "/WhatsApp-5.jpeg", alt: "Brownstone EV and solar-ready development" },
-  { src: "/WhatsApp-6.jpeg", alt: "Brownstone modern residential technology" },
 ];
 
 const TECH_CATEGORIES: {

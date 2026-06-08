@@ -33,7 +33,7 @@ export default function About() {
               Crafting Legacies in <br />
               <span className="text-primary italic">Modern Stone</span>
             </h1>
-            <p className="text-white/90 text-base sm:text-lg md:text-xl max-w-2xl font-light leading-relaxed mb-6 sm:mb-8 px-2">
+            <p className="text-white/90 text-base sm:text-lg md:text-xl max-w-2xl font-light leading-6 mb-6 sm:mb-8 px-2">
               Merging historic craftsmanship with visionary architecture to
               build the sustainable luxury of tomorrow.
             </p>
@@ -63,7 +63,7 @@ export default function About() {
             To redefine luxury through the <br /> lens of sustainability.
           </h2>
           <div className="w-24 h-1 bg-primary mx-auto mb-8" />
-          <p className="text-grey text-xl leading-relaxed max-w-3xl mx-auto italic">
+          <p className="text-grey text-xl leading-6 max-w-3xl mx-auto italic">
             &quot;Every structure we build must honor its heritage while
             protecting the environment for future generations. We don&apos;t
             just construct buildings; we curate experiences that endure.&quot;
@@ -110,7 +110,7 @@ export default function About() {
                 className="w-24 md:w-32 h-auto object-contain"
               />
             </div>
-            <div className="relative border-l-2 border-primary/30 ml-2 sm:ml-4 pl-6 sm:pl-10">
+            <div className="relative border-l-2 border-primary/30 ml-2 sm:ml-4 pl-6 sm:pl-10 leading-6">
               {[
                 {
                   year: "2024",

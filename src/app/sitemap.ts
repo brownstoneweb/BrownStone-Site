@@ -10,6 +10,7 @@ const staticRoutes = [
   "",
   "/about",
   "/blog",
+  "/events",
   "/celestia",
   "/celestia/chalets",
   "/celestia/lakehouse",

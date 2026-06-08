@@ -18,11 +18,11 @@ export default function Home() {
       <Nav activePath="/" />
       <main>
         {/* Hero */}
-        <section className="relative min-h-[100svh] min-h-[600px] sm:min-h-[700px] h-screen w-full flex flex-col justify-center overflow-hidden">
+        <section className="relative min-h-[100svh] sm:min-h-[700px] h-screen w-full flex flex-col justify-center overflow-hidden">
           <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10" />
             <img
-              src="https://pub-3e7b2072ee7b4288bdc8a3613d022372.r2.dev/main/lakehouse-wide.webp"
+              src="/media1.jpeg"
               alt="Brownstone Construction luxury development and modern architecture"
               width={1920}
               height={1080}
@@ -31,39 +31,95 @@ export default function Home() {
               className="absolute inset-0 w-full h-full object-cover object-center scale-105"
             />
           </div>
-          <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 w-full">
+          <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 w-full mb-24 sm:mt-70 lg:mt-80">
             <div className="max-w-3xl flex flex-col gap-6 sm:gap-8">
-              <div className="flex items-center gap-4">
-                <div className="h-[1px] w-12 bg-primary" />
-                <span className="text-primary font-bold uppercase tracking-[0.3em] text-sm">
-                  Premier Construction
-                </span>
-              </div>
+            
               <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight drop-shadow-lg font-serif">
-                Redesigning Africa&apos;s <br />
-                Future – <span className="text-primary font-light">Brick by Brick</span>
+                Reinventing Africa&apos;s <br />
+                Future, <span className="text-primary font-light">Brick by Brick</span>
               </h1>
-              <p className="text-white/80 text-base sm:text-lg md:text-xl max-w-xl font-light leading-relaxed">
-                Leading the transition to sustainable, luxury urban development
-                with precision engineering and timeless design.
-              </p>
-              <div className="flex flex-wrap gap-3 sm:gap-4 pt-4">
-                <Link
-                  href="/portfolio"
-                  className="bg-primary text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-lg font-bold text-xs sm:text-sm uppercase tracking-widest flex items-center gap-2 hover:bg-white hover:text-earthy transition-all touch-manipulation"
-                >
-                  Explore Projects
-                  <span className="inline-flex items-center justify-center w-4 h-4 shrink-0" aria-hidden>
-                    <FaIcon name="arrowRight" className="w-full h-full" />
-                  </span>
-                </Link>
+              <div className=" flex items-center">
                 <Link
                   href="/about"
-                  className="border border-white/30 text-white backdrop-blur-sm px-6 sm:px-8 py-3.5 sm:py-4 rounded-lg font-bold text-xs sm:text-sm uppercase tracking-widest hover:bg-white/10 transition-all touch-manipulation"
+                  className="bg-primary text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-lg font-bold text-xs sm:text-sm uppercase tracking-widest flex items-center gap-2 hover:bg-white hover:text-earthy transition-all touch-manipulation"
                 >
                   Our Philosophy
                 </Link>
               </div>
+            <div className="flex items-center justify-start">
+  <div className="w-full md:w-full lg:w-full border border-white/30 backdrop-blur-sm rounded-lg px-6 min-h-[150px] sm:px-8 py-4 bg-white/5">
+    <h3 className="text-white font-bold text-sm sm:text-lg uppercase tracking-widest mt-2">
+      Selling Now
+    </h3>
+    <div className="h-1 bg-primary rounded-full w-9 sm:w-16 mb-10" aria-hidden />
+
+    <div className="flex items-start gap-6 sm:gap-8">
+      <a
+        href="/properties/celestia1"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:opacity-80 transition-opacity"
+      >
+        <img
+          src="/cele2.png"
+          alt="Celestia"
+          className="h-30 sm:h-30 w-10/12"
+        />
+      </a>
+        <img
+          src="/line.png"
+          alt="Celestia"
+          className="h-16 sm:h-16 w-14"
+        />
+      <a
+        href="/properties/israel-de-maison"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:opacity-80 transition-opacity"
+      >
+        <img
+          src="/logo1.png"
+          alt="Israel De Maison"
+          className="h-30 sm:h-30 w-10/12"
+        />
+      </a>
+      <img
+          src="/line.png"
+          alt="Celestia"
+          className="h-16 sm:h-16 w-14"
+        />
+      <a
+        href="/properties/izzy-villa"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:opacity-80 transition-opacity"
+      >
+        <img
+          src="/logo2.png"
+          alt="Izzy Villa"
+          className="h-30 sm:h-30 w-10/12"
+        />
+      </a>
+      <img
+          src="/line.png"
+          alt="Celestia"
+          className="h-16 sm:h-16 w-14"
+        />
+      <a
+        href="/properties/wilma-crescent"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:opacity-80 transition-opacity"
+      >
+        <img
+          src="/logo3.png"
+          alt="Wilma Crescent"
+          className="h-30 sm:h-30 w-10/12"
+        />
+      </a>
+    </div>
+  </div>
+</div>
             </div>
           </div>
         </section>
@@ -99,7 +155,7 @@ export default function Home() {
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-earthy leading-tight font-serif">
                 Who We Are – Brownstone Construction Firm Ltd
               </h2>
-              <p className="text-lg text-earthy/70 leading-relaxed font-light">
+              <p className="text-lg text-earthy/70 leading-6 font-light">
                 Brownstone Construction Limited is dedicated to luxury,
                 sustainability, and precision in every structure we build. We
                 blend sophisticated design with industrial reliability, ensuring

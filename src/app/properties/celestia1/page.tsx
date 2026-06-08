@@ -5,6 +5,8 @@ import Nav from "@/components/Nav";
 import { FaIcon, IconName } from "@/components/Icons";
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import CtaSection from "@/components/CtaSection";
+import FormSection from "@/components/FormSection";
 import { useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -321,113 +323,159 @@ export default function MediaGallery() {
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('media.jpg')`
+              backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/hero.jpg')`,
             }}
           />
           <div className="relative z-10">
             <span className="text-primary uppercase tracking-[0.2em] text-xs mb-4 block">
-              Browse through our media 
+              Browse through our 3 in 1 property 
             </span>
             <h1 className="text-white text-5xl md:text-7xl lg:text-8xl font-black font-serif mb-6">
-              Gallery
+              Celestia
             </h1>
-            <div className="w-24 h-1 bg-primary mx-auto mt-6" />
+            <div className="w-24 h-1 bg-primary mx-auto mb-6" />
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-24">
+              <a
+                href="tel:+233244028485"
+                className="bg-primary text-white px-6 py-3 text-sm uppercase font-bold hover:opacity-90 transition-all inline-flex items-center gap-2"
+                style={{ boxShadow: '0 6px 24px rgba(0,0,0,0.25)' }}
+              >
+                <i className="ri-phone-line" />
+                Call Now — Reserve Your Unit
+              </a>
+
+              <a
+                href="#townhouses"
+                className="bg-transparent text-white px-6 py-3 text-sm uppercase font-light border border-white/30 hover:border-primary hover:text-primary transition-all whitespace-nowrap"
+              >
+                Explore the Collection
+              </a>
+            </div>
           </div>
         </section>
 
         {/* TOWNHOUSE */}
-        <div id="townhouses" className="mt-32">
+        <div id="townhouses" className="mt-25">
           <Slider
-            title="Townhouses - Celestia"
+            title="Townhouses"
             description={<p className="font-semibold text-earthy">Modern Comfort for the Discerning Buyer</p>}
             videoImage="/Night-house.jpg"
             videoLink="https://www.youtube.com/embed/2_0Qikzkel4"
             images={images}
             sliderRef={townhouseRef}
           />
+
+          <div className="max-w-3xl mx-auto px-6 text-center mb-16">
+            <Link
+              href="/celestia/townhouses"
+              className="inline-block w-full md:w-64 py-3 border border-earthy/20 rounded-lg font-bold hover:bg-earthy hover:text-white transition-all text-center"
+            >
+              Explore Details
+            </Link>
+          </div>
+
+          <div className="max-w-3xl mx-auto px-6 text-left mb-30">
+            <p className=" mb-3 leading-relaxed">
+              Sophisticated 2-bedroom residences with mountain views.
+              Designed for the modern family.
+            </p>
+
+            <ul className="space-y-1 mb-4 pl-1 ">
+              {[
+                "Floor-to-ceiling panoramic glass",
+                "Smart-home automation ready",
+                "Attractive lush green corridor",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm">
+                  <FaIcon name="check" className="text-primary text-lg mt-0.5 flex-shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-      <div className="max-w-3xl mx-auto px-6 text-left mt-5 mb-20">
-  <p className=" mb-6 leading-relaxed">
-    Sophisticated 2-bedroom residences with mountain views.
-    Designed for the modern family.
-  </p>
-
-  <ul className="space-y-3 mb-8 pl-1">
-    {[
-      "Floor-to-ceiling panoramic glass",
-      "Smart-home automation ready",
-      "Attractive lush green corridor",
-    ].map((item) => (
-      <li key={item} className="flex items-start gap-2 text-sm">
-        <span
-          className="material-symbols-outlined text-primary text-xl"
-          style={{ fontFamily: "Material Symbols Outlined" }}
-        >
-          done
-        </span>
-        {item}
-      </li>
-    ))}
-  </ul>
-
-  <Link
-    href="/celestia/townhouses"
-    className="block w-full py-4 border border-earthy/20 rounded-lg font-bold hover:bg-earthy hover:text-white transition-all text-center"
-  >
-    Explore Details
-  </Link>
-</div>
-
         {/* CHALET */}
-        <Slider
-          title="Chalet - Celestia"
-          description={<p className="font-semibold text-earthy">For individuals who desire exclusivity and sanctuary.</p>}
-          videoImage="/Chalet-ev.jpg"
-          videoLink="https://www.youtube.com/embed/bGl8kNslIX8"
-          images={images1}
-          sliderRef={chaletRef}
-        />
-<div className="max-w-3xl mx-auto px-6 text-left mt-5 mb-20">
-  <p className=" mb-6 leading-relaxed">
-    Bespoke living spaces designed for ultimate privacy and seclusion with river access.
-  </p>
+        <div id="chalets" className="mt-25">
+          <Slider
+            title="Chalet"
+            description={<p className="font-semibold text-earthy">For individuals who desire exclusivity and sanctuary.</p>}
+            videoImage="/Chalet-ev.jpg"
+            videoLink="https://www.youtube.com/embed/bGl8kNslIX8"
+            images={images1}
+            sliderRef={chaletRef}
+          />
 
-  <ul className="space-y-3 mb-8 pl-1">
-    {[
-      "Natural local stone finishes",
-      "Smart EV charging station",
-      "Luxury interior views",
-    ].map((item) => (
-      <li key={item} className="flex items-start gap-2 text-sm">
-        <span
-          className="material-symbols-outlined text-primary text-xl"
-          style={{ fontFamily: "Material Symbols Outlined" }}
-        >
-          done
-        </span>
-        {item}
-      </li>
-    ))}
-  </ul>
+          <div className="max-w-3xl mx-auto px-6 text-center mb-16">
+            <Link
+              href="/celestia/chalets"
+              className="inline-block w-full md:w-64 py-3 border border-earthy/20 rounded-lg font-bold hover:bg-earthy hover:text-white transition-all text-center"
+            >
+              Explore Details
+            </Link>
+          </div>
 
-  <Link
-    href="/celestia/chalets"
-    className="block w-full py-4 border border-earthy/20 rounded-lg font-bold hover:bg-earthy hover:text-white transition-all text-center"
-  >
-    Explore Details
-  </Link>
-</div>
+          <div className="max-w-3xl mx-auto px-6 text-left mt-5 mb-30">
+            <p className=" mb-3 leading-relaxed">
+              Bespoke living spaces designed for ultimate privacy and seclusion with river access.
+            </p>
+
+            <ul className="space-y-1 mb-8 pl-1">
+              {[
+                "Natural local stone finishes",
+                "Smart EV charging station",
+                "Luxury interior views",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm">
+                  <FaIcon name="check" className="text-primary text-lg mt-0.5 flex-shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
         {/* LAKEHOUSE */}
-        <Slider
-          title="Lakehouse - Celestia"
-          description={<p className="font-semibold text-earthy">Perfect for global-minded achievers.</p>}
-          videoImage="/Lakehouse/Lake.jpg"
-          videoLink="https://www.youtube.com/embed/-Bv12I-WlzE"
-          images={images2}
-          sliderRef={lakeRef}
-        />
+        <div id="lakehouse" className="mt-25">
+          <Slider
+            title="Lakehouse"
+            description={<p className="font-semibold text-earthy">Perfect for global-minded achievers.</p>}
+            videoImage="/Lakehouse/Lake.jpg"
+            videoLink="https://www.youtube.com/embed/-Bv12I-WlzE"
+            images={images2}
+            sliderRef={lakeRef}
+          />
+
+          <div className="max-w-3xl mx-auto px-6 text-center mb-16">
+            <Link
+              href="/celestia/lakehouse"
+              className="inline-block w-full md:w-64 py-3 border border-earthy/20 rounded-lg font-bold hover:bg-earthy hover:text-white transition-all text-center"
+            >
+              Explore Details
+            </Link>
+          </div>
+
+          <div className="max-w-3xl mx-auto px-6 text-left mt-5 mb-30">
+            <p className=" mb-3 leading-relaxed">
+              Enjoy panoramic lake views, bespoke interiors, and exclusive access to boating and
+              leisure facilities, ideal for those seeking a distinguished getaway or second home.
+            </p>
+
+            <ul className="space-y-1 mb-8 pl-1">
+              {[
+                "Private waterfront access and dock",
+                "Panoramic lake and sunrise views",
+                "Membership-based leisure and concierge services",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm">
+                  <FaIcon name="check" className="text-primary text-lg mt-0.5 flex-shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
         {/* NEAREST LANDMARKS */}
         <section className="py-20 bg-background-light">
@@ -509,7 +557,11 @@ export default function MediaGallery() {
         )}
       </AnimatePresence>
 
-      <Footer />
+        {/* PRIMARY CTA + BROCHURE FORM */}
+        <CtaSection />
+        <FormSection />
+
+        <Footer />
     </div>
   )
 }

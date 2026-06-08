@@ -8,7 +8,7 @@ export const metadata = {
   alternates: { canonical: "/services" },
 };
 
-const services: { icon: IconName; title: string; desc: string; link: string }[] = [
+const services: { icon: IconName; title: string; desc: string; link: string, }[] = [
   {
     icon: "house",
     title: "Residential Construction",
@@ -64,7 +64,7 @@ export default function Services() {
             <span className="text-primary font-bold uppercase tracking-[0.2em] text-xs mb-4 block">
               Excellence in Development
             </span>
-            <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight font-serif mb-4 sm:mb-6">
+            <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight font-serif mb-2 sm:mb-3">
               Our Services
             </h1>
             <div className="w-24 h-1 bg-primary mx-auto mb-8" />
@@ -77,11 +77,11 @@ export default function Services() {
         {/* Intro - same pattern as other pages */}
         <section className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 bg-background-light">
           <div className="max-w-7xl mx-auto text-center mb-16">
-            <h2 className="text-earthy font-serif text-3xl md:text-4xl font-bold mb-6">
+            <h2 className="text-earthy font-serif text-3xl md:text-4xl font-bold mb-2">
               Bespoke Solutions
             </h2>
             <div className="w-16 h-0.5 bg-primary mx-auto mb-6" />
-            <p className="text-grey text-lg max-w-2xl mx-auto font-light leading-relaxed">
+            <p className="text-grey text-lg max-w-2xl mx-auto font-light leading-6">
               Crafting sustainable landmarks through precision engineering and
               visionary architecture. Our approach balances luxury aesthetics
               with functional excellence.
@@ -101,7 +101,7 @@ export default function Services() {
                 <h3 className="text-earthy font-serif text-xl lg:text-2xl font-bold mb-4">
                   {title}
                 </h3>
-                <p className="text-grey font-light leading-relaxed mb-6">
+                <p className="text-grey font-light leading-6 mb-6">
                   {desc}
                 </p>
                 <Link
