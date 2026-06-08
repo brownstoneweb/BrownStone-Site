@@ -441,7 +441,7 @@ export default function MediaGallery() {
           <Slider
             title="Lakehouse"
             description={<p className="font-semibold text-earthy">Perfect for global-minded achievers.</p>}
-            videoImage="/Lakehouse/Lake.jpg"
+            videoImage="/lake1.webp"
             videoLink="https://www.youtube.com/embed/-Bv12I-WlzE"
             images={images2}
             sliderRef={lakeRef}
