@@ -135,7 +135,7 @@ export default function IzzyVilla() {
 							<div className="rounded-xl overflow-hidden border border-earthy/10 bg-white p-6 shadow-sm">
 								<div className="aspect-[16/10] bg-earthy/5 rounded-lg overflow-hidden mb-4">
 									<img
-										src="/izzy/pool.png"
+										src="/izzy/Pool.png"
 										alt="Izzy Villa preview"
 										className="w-full h-full object-cover object-center"
 									/>
