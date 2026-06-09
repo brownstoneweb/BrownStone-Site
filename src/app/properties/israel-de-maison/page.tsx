@@ -28,7 +28,7 @@ export default function IsraelDeMaison() {
         <section className="relative min-h-[60vh] sm:min-h-[70vh] lg:min-h-[75vh]">
           <div className="absolute inset-0 z-0">
             <img
-              src="/israeldm.jpg"
+              src="/Israeldm.jpg"
               alt="Israel de Maison — East Legon residences"
               className="w-full h-full object-cover object-top absolute inset-0"
             />

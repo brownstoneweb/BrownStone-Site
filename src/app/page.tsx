@@ -66,11 +66,7 @@ export default function Home() {
           className="h-30 sm:h-30 w-10/12"
         />
       </a>
-        <img
-          src="/Line1.webp"
-          alt="Celestia"
-          className="h-16 sm:h-16 w-14"
-        />
+        
       <a
         href="/properties/israel-de-maison"
         target="_blank"
@@ -83,12 +79,7 @@ export default function Home() {
           className="h-30 sm:h-30 w-10/12"
         />
       </a>
-      <img
-          src="/Line1.webp"
-          alt="Celestia"
-          className="h-16 sm:h-16 w-14"
-        />
-
+      
       <a
         href="/properties/izzy-villa"
         target="_blank"
@@ -101,11 +92,7 @@ export default function Home() {
           className="h-30 sm:h-30 w-10/12"
         />
       </a>
-      <img
-          src="/Line1.webp"
-          alt="Celestia"
-          className="h-16 sm:h-16 w-14"
-        />
+      
       
       <a
         href="/properties/wilma-crescent"
