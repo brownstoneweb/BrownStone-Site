@@ -66,8 +66,11 @@ export default function Home() {
           className="h-30 sm:h-30 w-10/12"
         />
       </a>
-        
-
+        <img
+          src="/Line1.webp"
+          alt="Celestia"
+          className="h-16 sm:h-16 w-14"
+        />
       <a
         href="/properties/israel-de-maison"
         target="_blank"
@@ -80,8 +83,11 @@ export default function Home() {
           className="h-30 sm:h-30 w-10/12"
         />
       </a>
-      
-
+      <img
+          src="/Line1.webp"
+          alt="Celestia"
+          className="h-16 sm:h-16 w-14"
+        />
 
       <a
         href="/properties/izzy-villa"
@@ -95,9 +101,11 @@ export default function Home() {
           className="h-30 sm:h-30 w-10/12"
         />
       </a>
-      
-
-
+      <img
+          src="/Line1.webp"
+          alt="Celestia"
+          className="h-16 sm:h-16 w-14"
+        />
       
       <a
         href="/properties/wilma-crescent"
@@ -221,9 +229,9 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
               {[
-                { location: "Akosombo", title: "Celestia", href: "/celestia1", img: assetUrl("CHALETS_.webp"), alt: "Celestia chalets at Akosombo – luxury residential development" },
-                { location: "East Legon", title: "East Legon Trio", href: "/israel-de-maison", img: assetUrl("east-legon-townhouses2.webp"), alt: "East Legon Trio townhouses – East Legon development" },
-                { location: "Adjiringanor", title: "Wilma Crescent", href: "/wilma-crescent", img: assetUrl("WilmaCrescent/wilmacresent1.webp"), alt: "Wilman Crescent development" },
+                { location: "Akosombo", title: "Celestia", href: "/properties/celestia1", img: assetUrl("CHALETS_.webp"), alt: "Celestia chalets at Akosombo – luxury residential development" },
+                { location: "East Legon", title: "East Legon Trio", href: "/properties/israel-de-maison", img: assetUrl("east-legon-townhouses2.webp"), alt: "East Legon Trio townhouses – East Legon development" },
+                { location: "Adjiringanor", title: "Wilma Crescent", href: "/properties/wilma-crescent", img: assetUrl("WilmaCrescent/wilmacresent1.webp"), alt: "Wilman Crescent development" },
               ].map(({ location, title, href, img, alt }) => (
                 <div
                   key={title}

@@ -338,7 +338,7 @@ export default function MediaGallery() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-24">
               <a
                 href="tel:+233244028485"
-                className="bg-primary text-white px-6 py-3 text-sm uppercase font-bold hover:opacity-90 transition-all inline-flex items-center gap-2"
+                className="bg-primary text-white px-6 py-3 text-sm uppercase font-bold hover:opacity-90 transition-all inline-flex items-center gap-2 border rounded-lg"
                 style={{ boxShadow: '0 6px 24px rgba(0,0,0,0.25)' }}
               >
                 <i className="ri-phone-line" />
@@ -347,7 +347,7 @@ export default function MediaGallery() {
 
               <a
                 href="#townhouses"
-                className="bg-transparent text-white px-6 py-3 text-sm uppercase font-light border border-white/30 hover:border-primary hover:text-primary transition-all whitespace-nowrap"
+                className="bg-transparent text-white px-6 py-3 text-sm uppercase font-light border border-white/30 hover:border-primary hover:text-primary transition-all whitespace-nowrap border rounded-lg"
               >
                 Explore the Collection
               </a>

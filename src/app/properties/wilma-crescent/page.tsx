@@ -57,9 +57,8 @@ export default function WilmaCrescent() {
 								Enquire Now
 							</Link>
 							<a
-								href="/brochure.pdf"
-								target="_blank"
-								rel="noreferrer"
+								href="/Wilma-crescent_brochure.pdf"
+								download
 								className="inline-flex items-center gap-2 border border-white/20 text-white px-5 py-3 rounded-lg text-sm hover:bg-white/5 transition"
 							>
 								Download Brochure
@@ -157,12 +156,13 @@ export default function WilmaCrescent() {
 									>
 										Contact Sales
 									</Link>
-									<Link
-										href="/brochure.pdf"
+									<a
+										href="/Wilma-crescent_brochure.pdf"
+										download
 										className="inline-flex items-center gap-2 border border-earthy/10 px-4 py-2 rounded-lg text-sm"
 									>
 										Download Brochure
-									</Link>
+									</a>
 								</div>
 							</div>
 						</div>
@@ -184,12 +184,13 @@ export default function WilmaCrescent() {
 								>
 									Contact Sales
 								</Link>
-								<Link
-									href="/brochure.pdf"
+								<a
+									href="/Wilma-crescent_brochure.pdf"
+									download
 									className="inline-flex items-center gap-2 border border-earthy/10 px-4 py-3 rounded-lg"
 								>
 									Download Brochure
-								</Link>
+								</a>
 							</div>
 						</div>
 					</div>

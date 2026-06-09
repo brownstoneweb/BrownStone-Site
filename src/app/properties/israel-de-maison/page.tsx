@@ -69,9 +69,8 @@ export default function IsraelDeMaison() {
               </Link>
 
               <a
-                href="/brochure.pdf"
-                target="_blank"
-                rel="noreferrer"
+                href="/Israel-de-Maison_brochure.pdf"
+                download
                 className="inline-flex items-center gap-2 border border-white/20 text-white px-5 py-3 rounded-lg text-sm hover:bg-white/5 transition"
               >
                 Download Brochure
@@ -198,12 +197,6 @@ export default function IsraelDeMaison() {
                     Contact Sales
                   </a>
 
-                  <a
-                    href="/book-visit"
-                    className="inline-flex items-center gap-2 border border-earthy/10 px-4 py-2 rounded-lg text-sm"
-                  >
-                    Book a Visit
-                  </a>
                 </div>
               </div>
             </div>
@@ -235,12 +228,13 @@ export default function IsraelDeMaison() {
                   Contact Sales
                 </Link>
 
-                <Link
-                  href="/brochure.pdf"
+                <a
+                  href="/Israel-de-Maison_brochure.pdf"
+                  download
                   className="inline-flex items-center gap-2 border border-earthy/10 px-4 py-3 rounded-lg"
                 >
                   Download Brochure
-                </Link>
+                </a>
               </div>
             </div>
           </div>

@@ -55,14 +55,7 @@ export default function IzzyVilla() {
 								Enquire Now
 							</Link>
 
-							<a
-								href="/brochure.pdf"
-								target="_blank"
-								rel="noreferrer"
-								className="inline-flex items-center gap-2 border border-white/20 text-white px-5 py-3 rounded-lg text-sm hover:bg-white/5 transition"
-							>
-								Download Brochure
-							</a>
+							
 						</div>
 					</div>
 				</section>
@@ -167,12 +160,7 @@ export default function IzzyVilla() {
 									>
 										Contact Sales
 									</Link>
-									<Link
-										href="/brochure.pdf"
-										className="inline-flex items-center gap-2 border border-earthy/10 px-4 py-2 rounded-lg text-sm"
-									>
-										Download Brochure
-									</Link>
+									
 								</div>
 							</div>
 						</div>
@@ -194,12 +182,7 @@ export default function IzzyVilla() {
                                          >
                                          Contact Sales
                                      </Link>
-                                     <Link
-                                         href="/brochure.pdf"
-                                         className="inline-flex items-center gap-2 border border-earthy/10 px-4 py-3 rounded-lg"
-                                         >
-                                         Download Brochure
-                                     </Link>
+                                     
                                         </div>
                                 </div>
                             </div>
