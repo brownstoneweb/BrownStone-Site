@@ -28,11 +28,11 @@ const navLinks: NavItem[] = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
-  { href: "/events", label: "Events" },
   {
     label: "Projects",
     children: projectLinks,
   },
+  { href: "/events", label: "Events" },
   { href: "/blog", label: "Blog" },
 ];
 
