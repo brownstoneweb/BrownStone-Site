@@ -211,13 +211,18 @@ export default function Home() {
                   commercial spaces across the continent.
                 </p>
               </div>
-              
+              <Link
+                href="/portfolio"
+                className="flex items-center gap-2 font-bold uppercase tracking-widest text-xs border-b-2 border-primary pb-2 hover:text-primary transition-all w-fit"
+              >
+                View All Projects
+              </Link>
 
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
               {[
                 { location: "Akosombo", title: "Celestia", href: "/properties/celestia1", img: assetUrl("CHALETS_.webp"), alt: "Celestia chalets at Akosombo – luxury residential development" },
-                { location: "East Legon", title: "East Legon Trio", href: "/properties/israel-de-maison", img: assetUrl("east-legon-townhouses2.webp"), alt: "East Legon Trio townhouses – East Legon development" },
+                { location: "East Legon", title: "Israel-De-Maison", href: "/properties/israel-de-maison", img: assetUrl("east-legon-townhouses2.webp"), alt: "East Legon Trio townhouses – East Legon development" },
                 { location: "Adjiringanor", title: "Wilma Crescent", href: "/properties/wilma-crescent", img: assetUrl("WilmaCrescent/wilmacresent1.webp"), alt: "Wilman Crescent development" },
               ].map(({ location, title, href, img, alt }) => (
                 <div

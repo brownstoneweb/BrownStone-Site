@@ -38,6 +38,26 @@ const wilmaImages = [
   { src: "/wilma0.jpeg", alt: "Wilma Crescent interior" },
 ];
 
+const robayImages = [
+  { src: "/robay/robay1.jpg", alt: "Robay Villa 1" },
+  { src: "/robay/robay2.jpg", alt: "Robay Villa 2" },
+  { src: "/robay/robay3.jpg", alt: "Robay Villa 3" },
+  { src: "/robay/robay4.jpg", alt: "Robay Villa 4" },
+  { src: "/robay/robay5.jpg", alt: "Robay Villa 5" },
+  { src: "/robay/robay6.jpg", alt: "Robay Villa 6" },
+  { src: "/robay/robay7.jpg", alt: "Robay Villa 7" },
+];
+
+const austinImages = [
+  { src: "/austin/austin1.jpg", alt: "Austin Villa 1" },
+  { src: "/austin/austin2.jpg", alt: "Austin Villa 2" },
+  { src: "/austin/austin3.jpg", alt: "Austin Villa 3" },
+  { src: "/austin/austin4.jpg", alt: "Austin Villa 4" },
+  { src: "/austin/austin8.jpg", alt: "Austin Villa 5" },
+  { src: "/austin/austin9.jpg", alt: "Austin Villa 6" },
+  { src: "/austin/austin10.jpg", alt: "Austin Villa 7" },
+];
+
 const eastLegonImages = [
   { src: assetUrl("east-legon-townhouses2.webp"), alt: "East Legon Trio townhouses development" },
   { src: assetUrl("east-legon-townhouses3.webp"), alt: "East Legon Trio townhouse exterior" },
@@ -70,22 +90,31 @@ const tabs = [
   { id: "israel-de-maison" as const, label: "Israel de Maison" },
   { id: "izzy-villa" as const, label: "Izzy Villa" },
   { id: "wilma-crescent" as const, label: "Wilma Crescent" },
+  { id: "robay-villa" as const, label: "Robay Villa" },
+  { id: "austin-villa" as const, label: "Austin Villa" },
 ];
 
-const TAB_FROM_PARAM: Record<string, "celestia" | "israel-de-maison" | "izzy-villa" | "wilma-crescent"> = {
+const TAB_FROM_PARAM: Record<string, "celestia" | "israel-de-maison" | "izzy-villa" | "wilma-crescent" | "robay-villa" | "austin-villa"> = {
   celestia: "celestia",
   "israel-de-maison": "israel-de-maison",
   "izzy-villa": "izzy-villa",
   "wilma-crescent": "wilma-crescent",
+  "robay-villa": "robay-villa",
+  "austin-villa": "austin-villa",
 };
 
 function PortfolioContent() {
   const searchParams = useSearchParams();
   const projectParam = searchParams.get("project");
   const initialTab = (projectParam && TAB_FROM_PARAM[projectParam]) || "israel-de-maison";
-  const [activeTab, setActiveTab] = useState<"celestia" | "israel-de-maison" | "izzy-villa" | "wilma-crescent">(
-    initialTab as any || "israel-de-maison"
-  );
+  const [activeTab, setActiveTab] = useState<
+    | "celestia"
+    | "israel-de-maison"
+    | "izzy-villa"
+    | "wilma-crescent"
+    | "robay-villa"
+    | "austin-villa"
+  >(initialTab as any || "israel-de-maison");
   const [lightbox, setLightbox] = useState<{ src: string; alt: string; index: number } | null>(null);
 
   useEffect(() => {
@@ -102,7 +131,11 @@ function PortfolioContent() {
           ? izzyImages
           : activeTab === "wilma-crescent"
             ? wilmaImages
-            : celestiaImages;
+            : activeTab === "robay-villa"
+              ? robayImages
+              : activeTab === "austin-villa"
+                ? austinImages
+                : celestiaImages;
 
   const openLightbox = useCallback((src: string, alt: string, index: number) => {
     setLightbox({ src, alt, index });
@@ -197,20 +230,22 @@ function PortfolioContent() {
 
           <div className="mt-12 text-center mb-10">
             <div className="flex flex-wrap gap-9 mt-6 justify-center">
-              <Link
-                href={
-                  activeTab === "celestia"
-                    ? "/properties/celestia1"
-                    : activeTab === "israel-de-maison"
-                      ? "/properties/israel-de-maison"
-                      : activeTab === "izzy-villa"
-                        ? "/properties/izzy-villa"
-                        : "/properties/wilma-crescent"
-                }
-                className="inline-flex w-fit items-center justify-center rounded-full bg-primary text-white px-6 py-3 text-sm font-bold tracking-wider hover:bg-primary/90 transition-all"
-              >
-                View Project
-              </Link>
+              {(activeTab !== "robay-villa" && activeTab !== "austin-villa") && (
+                <Link
+                  href={
+                    activeTab === "celestia"
+                      ? "/properties/celestia1"
+                      : activeTab === "israel-de-maison"
+                        ? "/properties/israel-de-maison"
+                        : activeTab === "izzy-villa"
+                          ? "/properties/izzy-villa"
+                          : "/properties/wilma-crescent"
+                  }
+                  className="inline-flex w-fit items-center justify-center rounded-full bg-primary text-white px-6 py-3 text-sm font-bold tracking-wider hover:bg-primary/90 transition-all"
+                >
+                  View Project
+                </Link>
+              )}
             </div>
           </div>
 
