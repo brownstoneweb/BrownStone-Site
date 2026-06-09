@@ -21,7 +21,7 @@ const celestiaImages = [
 ];
 
 const israelImages = [
-  { src: "/israeldm.jpg", alt: "Israel de Maison exterior" },
+  { src: "/idm/idm5.jpg", alt: "Israel de Maison exterior" },
   { src: "/idm/idm1.jpg", alt: "Israel de Maison interior 1" },
   { src: "/idm/idm2.jpg", alt: "Israel de Maison interior 2" },
 ];
