@@ -20,6 +20,24 @@ const celestiaImages = [
   { src: assetUrl("celestia-townhouse-LIVING-AREA5.webp"), alt: "Celestia townhouse living space" },
 ];
 
+const israelImages = [
+  { src: "/israeldm.jpg", alt: "Israel de Maison exterior" },
+  { src: "/idm/idm1.jpg", alt: "Israel de Maison interior 1" },
+  { src: "/idm/idm2.jpg", alt: "Israel de Maison interior 2" },
+];
+
+const izzyImages = [
+  { src: "/izzy/Facade.png", alt: "Izzy Villa preview 1" },
+  { src: "/izzy/Pool.png", alt: "Izzy Villa preview 4" },
+  { src: "/izzy/living.jpeg", alt: "Izzy Villa preview 5" },
+  { src: "/izzy/stairs.jpeg", alt: "Izzy Villa preview 6" },
+];
+
+const wilmaImages = [
+  { src: "/wilma.jpeg", alt: "Wilma Crescent exterior" },
+  { src: "/wilma0.jpeg", alt: "Wilma Crescent interior" },
+];
+
 const eastLegonImages = [
   { src: assetUrl("east-legon-townhouses2.webp"), alt: "East Legon Trio townhouses development" },
   { src: assetUrl("east-legon-townhouses3.webp"), alt: "East Legon Trio townhouse exterior" },
@@ -49,38 +67,42 @@ const othersImages = [
 
 const tabs = [
   { id: "celestia" as const, label: "Celestia" },
-  { id: "east-legon" as const, label: "East Legon Trio" },
-  { id: "wilma-crescent" as const, label: "Wilman Crescent" },
-  { id: "others" as const, label: "Others" },
+  { id: "israel-de-maison" as const, label: "Israel de Maison" },
+  { id: "izzy-villa" as const, label: "Izzy Villa" },
+  { id: "wilma-crescent" as const, label: "Wilma Crescent" },
 ];
 
-const TAB_FROM_PARAM: Record<string, "celestia" | "east-legon" | "wilma-crescent" | "others"> = {
+const TAB_FROM_PARAM: Record<string, "celestia" | "israel-de-maison" | "izzy-villa" | "wilma-crescent"> = {
   celestia: "celestia",
-  "east-legon": "east-legon",
+  "israel-de-maison": "israel-de-maison",
+  "izzy-villa": "izzy-villa",
   "wilma-crescent": "wilma-crescent",
-  others: "others",
 };
 
 function PortfolioContent() {
   const searchParams = useSearchParams();
   const projectParam = searchParams.get("project");
-  const initialTab = (projectParam && TAB_FROM_PARAM[projectParam]) || "celestia";
-  const [activeTab, setActiveTab] = useState<"celestia" | "east-legon" | "wilma-crescent" | "others">(initialTab);
+  const initialTab = (projectParam && TAB_FROM_PARAM[projectParam]) || "israel-de-maison";
+  const [activeTab, setActiveTab] = useState<"celestia" | "israel-de-maison" | "izzy-villa" | "wilma-crescent">(
+    initialTab as any || "israel-de-maison"
+  );
   const [lightbox, setLightbox] = useState<{ src: string; alt: string; index: number } | null>(null);
 
   useEffect(() => {
     const tab = projectParam && TAB_FROM_PARAM[projectParam];
-    if (tab) setActiveTab(tab);
+    if (tab) setActiveTab(tab as any);
   }, [projectParam]);
 
   const images =
     activeTab === "celestia"
       ? celestiaImages
-      : activeTab === "east-legon"
-        ? eastLegonImages
-        : activeTab === "wilma-crescent"
-          ? wilmaCrescentImages
-          : othersImages;
+      : activeTab === "israel-de-maison"
+        ? israelImages
+        : activeTab === "izzy-villa"
+          ? izzyImages
+          : activeTab === "wilma-crescent"
+            ? wilmaImages
+            : celestiaImages;
 
   const openLightbox = useCallback((src: string, alt: string, index: number) => {
     setLightbox({ src, alt, index });
@@ -161,7 +183,7 @@ function PortfolioContent() {
               <button
                 key={id}
                 type="button"
-                onClick={() => setActiveTab(id)}
+                onClick={() => setActiveTab(id as any)}
                 className={`flex h-9 sm:h-10 items-center justify-center rounded-full px-4 sm:px-6 text-[11px] sm:text-xs font-bold uppercase tracking-wider sm:tracking-widest transition-all ${
                   activeTab === id
                     ? "bg-primary text-white"
@@ -173,30 +195,24 @@ function PortfolioContent() {
             ))}
           </div>
 
-          {activeTab === "celestia" && (
-            <div className="mt-12 text-center mb-10">
-              <div className="flex flex-wrap gap-9 mt-6 justify-start">
-                <Link
-                  href="/celestia/townhouses"
-                  className="inline-flex w-fit items-center justify-center rounded-full bg-primary text-white px-3 py-2 text-sm font-bold tracking-wider hover:bg-primary/90 transition-all"
-                >
-                  Townhouses
-                </Link>
-                <Link
-                  href="/celestia/chalets"
-                  className="inline-flex w-fit items-center justify-center rounded-full bg-primary text-white px-3 py-2 text-sm font-bold tracking-wider hover:bg-primary/90 transition-all"
-                >
-                  Chalets
-                </Link>
-                <Link
-                  href="/celestia/lakehouse"
-                  className="inline-flex w-fit items-center justify-center rounded-full bg-primary text-white px-3 py-2 text-sm font-bold tracking-wider hover:bg-primary/90 transition-all"
-                >
-                  Lakehouse
-                </Link>
-              </div>
+          <div className="mt-12 text-center mb-10">
+            <div className="flex flex-wrap gap-9 mt-6 justify-center">
+              <Link
+                href={
+                  activeTab === "celestia"
+                    ? "/properties/celestia1"
+                    : activeTab === "israel-de-maison"
+                      ? "/properties/israel-de-maison"
+                      : activeTab === "izzy-villa"
+                        ? "/properties/izzy-villa"
+                        : "/properties/wilma-crescent"
+                }
+                className="inline-flex w-fit items-center justify-center rounded-full bg-primary text-white px-6 py-3 text-sm font-bold tracking-wider hover:bg-primary/90 transition-all"
+              >
+                View Project
+              </Link>
             </div>
-          )}
+          </div>
 
           <div
             className="columns-1 sm:columns-2 md:columns-3 gap-6"
@@ -220,17 +236,7 @@ function PortfolioContent() {
             ))}
           </div>
 
-          {activeTab === "celestia" && (
-            <div className="mt-12 text-center">
-              <Link
-                href="/celestia"
-                className="inline-flex items-center gap-2 rounded-lg bg-primary text-white px-8 py-3.5 font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-all"
-              >
-                Learn more
-                <FaIcon name="arrowRight" className="text-base" />
-              </Link>
-            </div>
-          )}
+      
         </section>
       </main>
       <Footer />
