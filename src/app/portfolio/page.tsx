@@ -39,13 +39,13 @@ const wilmaImages = [
 ];
 
 const robayImages = [
-  { src: "/robay/robay1.jpg", alt: "Robay Villa 1" },
-  { src: "/robay/robay2.jpg", alt: "Robay Villa 2" },
-  { src: "/robay/robay3.jpg", alt: "Robay Villa 3" },
-  { src: "/robay/robay4.jpg", alt: "Robay Villa 4" },
-  { src: "/robay/robay5.jpg", alt: "Robay Villa 5" },
-  { src: "/robay/robay6.jpg", alt: "Robay Villa 6" },
-  { src: "/robay/robay7.jpg", alt: "Robay Villa 7" },
+  { src: "/robay/Robay1.jpg", alt: "Robay Villa 1" },
+  { src: "/robay/Robay2.jpg", alt: "Robay Villa 2" },
+  { src: "/robay/Robay3.jpg", alt: "Robay Villa 3" },
+  { src: "/robay/Robay4.jpg", alt: "Robay Villa 4" },
+  { src: "/robay/Robay5.jpg", alt: "Robay Villa 5" },
+  { src: "/robay/Robay6.jpg", alt: "Robay Villa 6" },
+  { src: "/robay/Robay7.jpg", alt: "Robay Villa 7" },
 ];
 
 const austinImages = [
