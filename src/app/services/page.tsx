@@ -55,9 +55,9 @@ export default function Services() {
         {/* Hero - same structure as About / Contact */}
         <section className="relative min-h-[60vh] sm:min-h-[70vh] md:min-h-[80vh] w-full overflow-hidden flex flex-col items-center justify-center">
           <div
-            className="absolute inset-0 bg-cover bg-bottom"
+            className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('ea21.jpg')`,
+              backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('service.jpg')`,
             }}
           />
           <div className="relative z-10 flex flex-col items-center justify-center text-center px-4">
