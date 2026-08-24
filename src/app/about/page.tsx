@@ -179,10 +179,6 @@ export default function About() {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="p-5">
-                  <h3 className="text-earthy text-xl font-bold font-serif">Danielle</h3>
-                  <p className="text-grey text-sm font-semibold mt-1">Business Developer / Executive Assistant</p>
-                </div>
               </div>
             </div>
 
@@ -200,7 +196,7 @@ export default function About() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
               {[
                 { name: "Mahlon Clottey", role: "Creative Developer" },
-                { name: "Manasseh Tei", role: "Accountant" },
+                { name: "Manasseh Daitey", role: "Accountant" },
               ].map(({ name, role }) => {
                 const initials = name.split(" ").map((n) => n[0]).join("").slice(0, 2);
                 const placeholder = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' fill='%23e8e6e3'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Georgia,serif' font-size='32' fill='%23181311'%3E${initials}%3C/text%3E%3C/svg%3E`;
