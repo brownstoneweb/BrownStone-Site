@@ -171,15 +171,7 @@ export default function About() {
                 </div>
               </div>
               <div className="w-px h-8 sm:h-10 bg-earthy/20 my-0" aria-hidden />
-              <div className="w-full max-w-sm rounded-xl border border-earthy/10 bg-white overflow-hidden shadow-sm text-center">
-                <div className="aspect-[3/4] bg-earthy/5 overflow-hidden">
-                  <img
-                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='533' viewBox='0 0 400 533'%3E%3Crect width='400' height='533' fill='%23e8e6e3'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Georgia,serif' font-size='72' fill='%23181311'%3ECB%3C/text%3E%3C/svg%3E"
-                    alt="Dr. Candace Baker"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
+              
             </div>
 
             {/* Divider */}
